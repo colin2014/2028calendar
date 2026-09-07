@@ -1,0 +1,1197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>DP1 HL Computer Science Calendar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#f6f1e4;
+  --paper-dot: rgba(28,43,74,0.12);
+  --surface:#fffdf8;
+  --surface-alt:#efe7d3;
+  --ink:#1c2b4a;
+  --ink-2:#4c5a75;
+  --ink-3:#8b93a6;
+  --border:rgba(28,43,74,0.14);
+  --border-strong:rgba(28,43,74,0.28);
+  --accent:#d6607e;
+  --accent-deep:#b8425f;
+  --accent-soft:#f8e3e8;
+  --navy-block:#1c2b4a;
+  --navy-block-ink:#fbf6ea;
+  --theme-a:#2f6fb0;
+  --theme-a-soft:#e3edf7;
+  --theme-b:#1f8a72;
+  --theme-b-soft:#e1f2ec;
+  --ia:#a8721c;
+  --ia-soft:#f5ead2;
+  --assessment:#b8425f;
+  --assessment-soft:#f8e3e8;
+  --buffer:#7d7398;
+  --buffer-soft:#ece9f2;
+  --done:#3f7d52;
+  --done-soft:#e3f0e6;
+  --warn:#b8642a;
+  --warn-soft:#f6e6d5;
+  --shadow: 0 1px 2px rgba(28,20,10,0.06), 0 10px 26px -14px rgba(28,20,10,0.28);
+  --shadow-lg: 0 6px 14px rgba(28,20,10,0.10), 0 24px 48px -18px rgba(28,20,10,0.34);
+  --radius: 12px;
+  color-scheme: light;
+}
+/* This calendar is deliberately locked to its warm cream/navy/pink "desk calendar"
+   look at all times - it does not switch with system/device dark mode. */
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(var(--paper-dot) 1.1px, transparent 1.1px) 0 0/16px 16px,
+    var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Sans", system-ui, sans-serif;
+  line-height:1.45;
+}
+.mono{font-family:"IBM Plex Mono", ui-monospace, monospace;}
+.display{font-family:"Baloo 2", "IBM Plex Sans", sans-serif;}
+button{font-family:inherit;}
+h1,h2,h3{margin:0; text-wrap:balance;}
+
+.spiral{
+  display:flex; justify-content:center; gap:14px; padding:10px 0 0;
+}
+.spiral span{
+  width:11px; height:11px; border-radius:50%;
+  background:var(--surface); border:2.5px solid var(--border-strong);
+}
+
+.shell{max-width:1240px; margin:0 auto; padding:6px 18px 56px;}
+
+/* ---------- Header ---------- */
+header.top{
+  display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
+  flex-wrap:wrap; padding:14px 4px 16px; border-bottom:3px solid var(--accent); margin-bottom:16px;
+}
+header.top .title-block{display:flex; align-items:center; gap:10px;}
+header.top .title-block .mark{
+  width:34px; height:34px; border-radius:9px; background:var(--navy-block); color:var(--navy-block-ink);
+  display:flex; align-items:center; justify-content:center; font-family:"IBM Plex Mono",monospace; font-weight:700; font-size:14px;
+}
+header.top h1{font-family:"Baloo 2",sans-serif; font-weight:700; font-size:26px; color:var(--ink); letter-spacing:.2px;}
+header.top .sub{font-size:12px; color:var(--ink-3); margin-top:1px;}
+.nav-cluster{display:flex; align-items:center; gap:10px;}
+.month-label{font-family:"Baloo 2",sans-serif; font-weight:700; font-size:22px; color:var(--ink); min-width:200px; text-align:right; font-variant-numeric:tabular-nums;}
+.iconbtn{
+  border:1.5px solid var(--border-strong); background:var(--surface); color:var(--ink-2);
+  border-radius:8px; width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:15px;
+}
+.iconbtn:hover{background:var(--surface-alt); color:var(--ink);}
+.todaybtn{
+  border:1.5px solid var(--border-strong); background:var(--surface); color:var(--ink);
+  border-radius:8px; padding:6px 13px; font-size:12.5px; font-weight:600; cursor:pointer;
+}
+.todaybtn:hover{background:var(--surface-alt);}
+
+/* ---------- Main layout ---------- */
+.mainrow{display:grid; grid-template-columns:1fr 306px; gap:18px; align-items:flex-start;}
+@media (max-width:880px){ .mainrow{grid-template-columns:1fr;} .sidebar{position:static;} }
+
+/* ---------- Calendar ---------- */
+.cal-panel{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.cal-grid{display:grid; grid-template-columns:repeat(7,1fr);}
+.cal-grid .dow{
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+  color:#fff; text-align:center; padding:9px 0; background:var(--accent);
+}
+.cal-cell{
+  min-height:98px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);
+  padding:6px 6px 8px; display:flex; flex-direction:column; gap:4px; background:var(--surface);
+}
+.cal-cell.weekend{background:var(--surface-alt);}
+.cal-cell.empty{background:var(--surface-alt);}
+.cal-cell.has-day{cursor:pointer; transition:background-color .1s ease;}
+.cal-cell.has-day:hover{background:var(--surface-alt);}
+.cal-cell.has-day.weekend:hover{background:var(--paper-dot);}
+.cal-cell .datenum{
+  font-size:12px; color:var(--ink-3); font-variant-numeric:tabular-nums; align-self:flex-start;
+  width:22px; height:22px; display:flex; align-items:center; justify-content:center; border-radius:50%;
+  font-weight:600;
+}
+.cal-cell.is-today .datenum{border:2px solid var(--accent); color:var(--accent);}
+.chip{
+  display:flex; align-items:center; gap:5px; border-radius:6px; padding:3px 6px;
+  font-size:11px; cursor:pointer; border:1px solid transparent; line-height:1.25;
+}
+.chip:hover{box-shadow:var(--shadow); border-color:var(--border-strong);}
+.chip.type-buffer{cursor:default;}
+.chip.type-buffer:hover{box-shadow:none; border-color:transparent;}
+.chip .cb{
+  flex:0 0 auto; width:12px; height:12px; border-radius:3px; border:1.5px solid currentColor;
+  display:inline-flex; align-items:center; justify-content:center; font-size:8px; color:inherit;
+}
+.chip.done .cb{background:currentColor;}
+.chip.done .cb:after{content:"\2713"; color:var(--surface); font-size:8px; font-weight:700;}
+.chip .txt{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:"IBM Plex Mono",monospace; font-weight:600;}
+.chip.done .txt{text-decoration:line-through; opacity:.65;}
+.chip.type-content.theme-a{background:var(--theme-a-soft); color:var(--theme-a);}
+.chip.type-content.theme-b{background:var(--theme-b-soft); color:var(--theme-b);}
+.chip.type-ia{background:var(--ia-soft); color:var(--ia);}
+.chip.type-assessment{background:var(--assessment-soft); color:var(--assessment); font-weight:700;}
+.chip.type-buffer{background:var(--buffer-soft); color:var(--buffer); font-style:italic;}
+.chip.selected{outline:2px solid var(--accent); outline-offset:1px;}
+.link-dot{width:5px; height:5px; border-radius:50%; background:currentColor; display:inline-block; margin-left:auto; flex:0 0 auto;}
+
+/* ---------- Sidebar ---------- */
+.sidebar{position:sticky; top:14px; display:flex; flex-direction:column; gap:14px;}
+.blockcard{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+.blockcard .blockhead{
+  background:var(--navy-block); color:var(--navy-block-ink); font-family:"Baloo 2",sans-serif; font-weight:700;
+  font-size:13px; letter-spacing:.04em; text-transform:uppercase; padding:9px 14px;
+}
+.blockcard .blockbody{padding:14px 16px;}
+.empty-hint{color:var(--ink-3); font-size:13px; font-style:italic;}
+
+.detail .code{font-family:"IBM Plex Mono",monospace; font-size:13.5px; font-weight:700; color:var(--accent);}
+.detail h3{font-size:16px; margin:4px 0 6px;}
+.detail p.meta{margin:0 0 10px; color:var(--ink-2); font-size:12px;}
+.detail p.detail-text{margin:0 0 12px; color:var(--ink-2); font-size:13px;}
+.badges{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
+.badge{font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:20px; border:1px solid var(--border-strong); color:var(--ink-2);}
+.badge.hl{background:var(--accent-soft); color:var(--accent-deep); border-color:transparent;}
+.badge.ia{background:var(--ia-soft); color:var(--ia); border-color:transparent;}
+.badge.assessment{background:var(--assessment-soft); color:var(--assessment); border-color:transparent;}
+.badge.buffer{background:var(--buffer-soft); color:var(--buffer); border-color:transparent;}
+
+.complete-row{display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--surface-alt); border:1px solid var(--border); border-radius:8px; margin-bottom:10px; cursor:pointer;}
+.complete-row .big-check{
+  width:18px; height:18px; border-radius:5px; border:2px solid var(--border-strong);
+  display:flex; align-items:center; justify-content:center; color:var(--done); flex:0 0 auto;
+}
+.complete-row .big-check.done{background:var(--done); border-color:var(--done);}
+.complete-row .big-check.done:after{content:"\2713"; color:#fff; font-size:12px; font-weight:700;}
+.complete-row span{font-size:12.5px; font-weight:600;}
+
+.item-block{border-top:1px dashed var(--border-strong); padding-top:10px; margin-top:10px;}
+.item-block:first-child{border-top:none; padding-top:0; margin-top:0;}
+
+/* ---------- File-style link buttons (slides / exit ticket) ---------- */
+.filefield{margin-bottom:8px;}
+.filefield:last-child{margin-bottom:0;}
+.filerow{display:flex; align-items:stretch; gap:6px;}
+.filebtn{
+  flex:1 1 auto; display:flex; align-items:center; gap:8px; min-width:0;
+  padding:0 12px; height:36px; border-radius:8px; border:1.5px solid var(--border-strong);
+  background:var(--surface); color:var(--ink); text-decoration:none; font-size:12.5px; font-weight:700;
+}
+.filebtn .ico{flex:0 0 auto; display:flex; color:inherit;}
+.filebtn .lbl{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.filebtn.has-link{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-deep); cursor:pointer;}
+.filebtn.has-link:hover{background:var(--accent); color:#fff;}
+.filebtn.empty{border-style:dashed; color:var(--ink-3); font-weight:600;}
+.editbtn{
+  flex:0 0 auto; width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center;
+  border-radius:8px; border:1.5px solid var(--border-strong); background:var(--surface); color:var(--ink-2); cursor:pointer;
+}
+.editbtn:hover{background:var(--surface-alt); color:var(--ink);}
+.link-editor{display:flex; gap:5px; margin-top:6px;}
+.link-editor[hidden]{display:none;}
+.link-editor input[type=text]{flex:1 1 auto; min-width:0; font-size:12px; padding:6px 8px;}
+.iconbtn2{
+  flex:0 0 auto; width:30px; height:30px; padding:0; display:inline-flex; align-items:center; justify-content:center;
+  border-radius:7px; border:1px solid var(--border-strong); background:var(--surface); color:var(--ink-2); cursor:pointer;
+}
+.iconbtn2:hover{background:var(--surface-alt); color:var(--ink);}
+.iconbtn2.save{color:var(--done); border-color:var(--done);}
+.iconbtn2.save:hover{background:var(--done); color:#fff;}
+.iconbtn2.cancel:hover{background:var(--warn-soft); color:var(--warn);}
+.assessed-list{font-size:12px; color:var(--ink-2); margin:0; padding-left:16px;}
+.assessed-list li{margin-bottom:2px;}
+
+.legend-row{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-2); margin-bottom:7px;}
+.legend-row:last-child{margin-bottom:0;}
+.legend-row .dot{width:10px; height:10px; border-radius:3px; flex:0 0 auto;}
+.progress-track{width:100%; height:8px; background:var(--surface-alt); border-radius:6px; overflow:hidden; border:1px solid var(--border); margin:6px 0 8px;}
+.progress-fill{height:100%; background:var(--done); border-radius:6px; transition:width .3s ease;}
+.progress-label{font-size:12px; color:var(--ink-2);}
+.progress-label b{color:var(--ink); font-variant-numeric:tabular-nums;}
+.mini-stats{display:flex; flex-wrap:wrap; gap:10px; margin-top:8px;}
+.mini-stats .mi{font-size:11px; color:var(--ink-3);}
+.mini-stats .mi b{display:block; font-size:14px; color:var(--ink); font-variant-numeric:tabular-nums;}
+
+/* ---------- Exam countdown ---------- */
+.cd-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
+.cd-unit{background:var(--navy-block); color:var(--navy-block-ink); border-radius:8px; padding:8px 2px 7px; text-align:center;}
+.cd-num{font-family:"IBM Plex Mono",monospace; font-weight:700; font-size:19px; font-variant-numeric:tabular-nums; line-height:1.1;}
+.cd-lbl{font-size:8.5px; text-transform:uppercase; letter-spacing:.06em; opacity:.7; margin-top:3px;}
+.cd-sub{font-size:11px; color:var(--ink-3); margin-top:9px; text-align:center;}
+
+input[type=text],input[type=password]{
+  font-family:inherit; font-size:13px; border:1px solid var(--border-strong);
+  border-radius:7px; padding:7px 10px; background:var(--surface); color:var(--ink);
+}
+button.btn{font-size:12.5px; cursor:pointer; border-radius:7px; border:1px solid var(--border-strong); background:var(--surface); color:var(--ink); padding:6px 11px;}
+button.btn:hover{background:var(--surface-alt);}
+button.btn.primary{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600;}
+button.btn.primary:hover{background:var(--accent-deep); border-color:var(--accent-deep);}
+button.btn:disabled{opacity:.4; cursor:not-allowed;}
+
+/* ---------- Below-the-fold sections ---------- */
+.lowerwrap{max-width:1240px; margin:26px auto 0; padding:0 18px;}
+.section-toggle{
+  display:flex; align-items:center; gap:8px; cursor:pointer; padding:10px 2px; color:var(--ink-2);
+  font-size:13px; font-weight:600; user-select:none;
+}
+.section-toggle .car{transition:transform .15s ease; font-size:11px;}
+.section-toggle.open .car{transform:rotate(90deg);}
+.section-body{display:none; padding:4px 2px 20px;}
+.section-body.open{display:block;}
+.panel{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow);}
+.search-row{display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;}
+input[type=text]#searchBox{flex:1 1 220px; min-width:160px;}
+table.agenda{width:100%; border-collapse:collapse; font-size:13px;}
+table.agenda th{
+  text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--ink-3); padding:7px 10px; border-bottom:1px solid var(--border-strong);
+  position:sticky; top:0; background:var(--surface-alt);
+}
+table.agenda td{padding:6px 10px; border-bottom:1px solid var(--border); vertical-align:top;}
+table.agenda tr:hover td{background:var(--surface-alt); cursor:pointer;}
+table.agenda tr.done td{color:var(--ink-3);}
+table.agenda tr.done td.focuscell{text-decoration:line-through;}
+table.agenda td.code{font-family:"IBM Plex Mono",monospace; white-space:nowrap;}
+.agenda-scroll{max-height:420px; overflow:auto; border:1px solid var(--border); border-radius:8px;}
+.check-td{width:26px; text-align:center;}
+.mini-check{width:15px; height:15px; border-radius:3px; border:1.5px solid var(--border-strong); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; color:var(--done);}
+.mini-check.done{background:var(--done-soft); border-color:var(--done); color:var(--done);}
+.mini-check.done:after{content:"\2713"; font-size:10px; font-weight:700;}
+.lock-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.import-active{display:none;}
+.import-active.show{display:block; margin-top:12px;}
+.file-drop{border:1.5px dashed var(--border-strong); border-radius:8px; padding:16px; text-align:center; color:var(--ink-2); font-size:13px; background:var(--surface-alt);}
+.file-drop input[type=file]{margin-top:8px;}
+.syllabus-topic{margin-bottom:6px;}
+.syllabus-topic summary{cursor:pointer; font-weight:600; padding:6px 4px; font-size:13.5px;}
+.syllabus-topic summary .hrs{color:var(--ink-3); font-weight:400; font-size:12px;}
+.syllabus-sub{margin:4px 0 8px 18px;}
+.syllabus-sub .st-title{font-size:12px; color:var(--ink-2); font-weight:600; margin:6px 0 3px;}
+.syllabus-item{display:flex; gap:8px; align-items:baseline; font-size:12.5px; padding:2px 0; color:var(--ink-2);}
+.syllabus-item .code{font-family:"IBM Plex Mono",monospace; color:var(--ink); min-width:56px; flex:0 0 auto;}
+.syllabus-item.covered{opacity:0.55;}
+.syllabus-item.covered .code{color:var(--done);}
+.assumptions-foot{font-size:12px; color:var(--ink-2);}
+.assumptions-foot ul{margin:8px 0 0; padding-left:18px;}
+.assumptions-foot li{margin-bottom:5px;}
+.assumptions-foot li b{color:var(--ink);}
+.toast{
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  background:var(--navy-block); color:var(--navy-block-ink); padding:10px 18px; border-radius:8px;
+  font-size:13px; box-shadow:var(--shadow); opacity:0; pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease; z-index:50; max-width:90vw; text-align:center;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
+.footer-note{text-align:center; color:var(--ink-3); font-size:11px; margin-top:22px;}
+.hidden{display:none !important;}
+
+@media (max-width:640px){
+  .cal-cell{min-height:64px;}
+  .chip .txt{max-width:46px;}
+  header.top{align-items:flex-start;}
+  .month-label{text-align:left; min-width:0;}
+}
+</style>
+</head>
+<body>
+
+<div class="spiral">
+  <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span><span></span>
+</div>
+
+<div class="shell">
+
+  <header class="top">
+    <div class="title-block">
+      <div class="mark">&lt;/&gt;</div>
+      <div>
+        <h1>DP1 Lesson Calendar</h1>
+        <div class="sub">HL Computer Science &middot; first assessment 2028</div>
+      </div>
+    </div>
+    <div class="nav-cluster">
+      <button class="todaybtn" id="todayBtn">Today</button>
+      <button class="iconbtn" id="prevBtn" aria-label="Previous month">&larr;</button>
+      <div class="month-label" id="monthLabel"></div>
+      <button class="iconbtn" id="nextBtn" aria-label="Next month">&rarr;</button>
+    </div>
+  </header>
+
+  <div class="mainrow">
+    <div class="cal-panel">
+      <div class="cal-grid" id="calGridHead"></div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <div class="sidebar">
+      <div class="blockcard" id="detailCard">
+        <div class="blockhead" id="detailHead">Selected day</div>
+        <div class="blockbody">
+          <div class="empty-hint" id="detailEmpty">Click a day on the calendar to see what's planned.</div>
+          <div class="detail" id="detailBody" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div class="blockcard">
+        <div class="blockhead"><svg viewBox="0 0 24 24" width="12" height="12" style="vertical-align:-1px;margin-right:6px;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Countdown to exams</div>
+        <div class="blockbody">
+          <div class="cd-grid">
+            <div class="cd-unit"><div class="cd-num" id="cdDays">0</div><div class="cd-lbl">Days</div></div>
+            <div class="cd-unit"><div class="cd-num" id="cdHours">00</div><div class="cd-lbl">Hrs</div></div>
+            <div class="cd-unit"><div class="cd-num" id="cdMins">00</div><div class="cd-lbl">Min</div></div>
+            <div class="cd-unit"><div class="cd-num" id="cdSecs">00</div><div class="cd-lbl">Sec</div></div>
+          </div>
+          <div class="cd-sub">to first assessment &middot; 25 Apr 2028</div>
+        </div>
+      </div>
+
+      <div class="blockcard">
+        <div class="blockhead">Legend</div>
+        <div class="blockbody">
+          <div class="legend-row"><span class="dot" style="background:var(--theme-a)"></span> Theme A &ndash; Concepts</div>
+          <div class="legend-row"><span class="dot" style="background:var(--theme-b)"></span> Theme B &ndash; Computational thinking</div>
+          <div class="legend-row"><span class="dot" style="background:var(--assessment)"></span> Assessment</div>
+          <div class="legend-row"><span class="dot" style="background:var(--ia)"></span> Internal Assessment</div>
+          <div class="legend-row"><span class="dot" style="background:var(--buffer)"></span> Review / catch-up</div>
+          <div class="legend-row"><span style="width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);flex:0 0 auto;"></span> Today</div>
+        </div>
+      </div>
+
+      <div class="blockcard">
+        <div class="blockhead">Progress</div>
+        <div class="blockbody">
+          <div class="progress-label"><b id="progressCount">0/125</b> lessons marked complete</div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="mini-stats" id="statsMini"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="lowerwrap">
+  <div class="section-toggle" data-target="sec-agenda"><span class="car">&#9656;</span> Search &amp; full agenda</div>
+  <div class="section-body" id="sec-agenda">
+    <div class="panel">
+      <div class="search-row"><input type="text" id="searchBox" placeholder="Search code or topic&hellip;"></div>
+      <div class="agenda-scroll">
+        <table class="agenda">
+          <thead><tr><th class="check-td"></th><th>Date</th><th>Day</th><th>Period</th><th>Code</th><th>Focus</th><th>Links</th></tr></thead>
+          <tbody id="agendaBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-toggle" data-target="sec-export"><span class="car">&#9656;</span> Export &amp; import schedule</div>
+  <div class="section-body" id="sec-export">
+    <div class="panel">
+      <p style="color:var(--ink-2); font-size:13px; margin:0 0 12px;">Export gives you the whole calendar as a CSV. Import reads a CSV or .xlsx back in for bulk date changes. Ticking lessons complete and adding links saves automatically as you go; import is password-protected since it can replace whole dates.</p>
+      <div class="lock-row">
+        <button class="btn primary" id="exportBtn">Export calendar as CSV</button>
+        <button class="btn" id="unlockBtn">Unlock import&hellip;</button>
+        <span id="lockedNote" style="color:var(--ink-3); font-size:12px;">Soft deterrent only.</span>
+      </div>
+      <div id="passwordRow" class="import-active">
+        <div class="lock-row">
+          <input type="password" id="pwInput" placeholder="Password">
+          <button class="btn primary" id="pwSubmit">Unlock</button>
+          <span id="pwError" style="color:var(--warn); font-size:12px;"></span>
+        </div>
+      </div>
+      <div id="importArea" class="import-active">
+        <div class="file-drop">
+          Choose a CSV or .xlsx file with columns <span class="mono">Date, Period, Type, Codes, Focus, Notes, Completed, SlidesUrls, ExitTicketUrls</span> (only Date + Period are required).
+          <br><input type="file" id="fileInput" accept=".csv,.xlsx">
+        </div>
+        <div id="importMsg" style="font-size:12px; color:var(--ink-2); margin-top:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-toggle" data-target="sec-syllabus"><span class="car">&#9656;</span> Full syllabus reference</div>
+  <div class="section-body" id="sec-syllabus">
+    <div class="panel">
+      <p style="color:var(--ink-2); font-size:13px; margin:0 0 10px;">All 112 content statements, grouped by topic. Greyed-out items are already covered.</p>
+      <div id="syllabusRef"></div>
+    </div>
+  </div>
+
+  <div class="section-toggle" data-target="sec-assumptions"><span class="car">&#9656;</span> Assumptions built into this calendar</div>
+  <div class="section-body" id="sec-assumptions">
+    <div class="panel assumptions-foot">
+      <ul>
+        <li><b>Start date:</b> Tuesday 8 September 2026.</li>
+        <li><b>Timetable:</b> Monday P1 (08:55&ndash;09:55), Tuesday P3 (11:30&ndash;12:30), Thursday P4 (13:30&ndash;14:30), Friday P1 (08:55&ndash;09:55) &mdash; P4's time wasn't given to me, so 13:30&ndash;14:30 is a guess. Fix it via Import if wrong.</li>
+        <li><b>Assessments:</b> every other Friday (alternating with a content lesson), each covering everything taught since the previous assessment. First Friday (11 Sept) carries content; the following Friday (18 Sept) is the first assessment.</li>
+        <li><b>Term breaks:</b> mirrored from Grade 12's calendar &mdash; Oct 15&ndash;Nov 1, Dec 17&ndash;Jan 5, Feb 13&ndash;21 &mdash; plus an <b>assumed</b> two-week spring break, Mar 29&ndash;Apr 11.</li>
+        <li><b>Last day of class:</b> Friday 11 June 2027 &mdash; my reading of "mid-June."</li>
+        <li><b>Ordering &amp; bundling:</b> straight theme order (A1&rarr;A2&rarr;A3&rarr;A4&rarr;B1&rarr;B2&rarr;B3&rarr;B4) continuing on from A1.1.1 / A1.1.2 already covered. Each subtopic is judged individually: 12 pairs of adjacent, lighter subtopics (roughly a half-hour of content each) share a single lesson, spread across the year rather than bunched together, while denser or hands-on subtopics keep a full lesson to themselves. Only 5 review/catch-up lessons remain, and the last 8 lessons (31 May&ndash;11 Jun) are held for an early introduction to the Internal Assessment.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="footer-note">Built for DP1 HL Computer Science &middot; content codes follow the IB syllabus for first assessment 2028</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const IMPORT_PASSWORD = "cs2027"; // change this line to set your own import password
+
+let LESSONS = [{"date":"2026-09-08","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A1.1.3","text":"Differences between the CPU and the GPU","level":"hl","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCofNIxOkoSQ5v3l2XHOj4aATJlWY7VvJ0osmuQOgswmCE","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCZye-DfdHhRp48iomnmBJBAcaXVyzJ5CBR-6_42i-_U0Q"}],"completed":false},{"date":"2026-09-10","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A1.1.4","text":"Purposes of different types of primary memory","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCI8cBnetpSSb7eNo4ixz6FAUlWP-oMCekSLymsBwiXsdk","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBVMG-fszdeSYMqM1mffalUAZNjNPunPoN022pTiZU7wPI"}],"completed":false},{"date":"2026-09-11","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A1.1.5","text":"The fetch, decode and execute cycle","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB2E3CjqqDBQYl52SVDnbcPAZhGxGItCGGlARZ3BCiX6E4","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD4APNzpaDwTqwVxakOeyMCAVSU2E6NiIWhq9NnGThiwiQ"}],"completed":false},{"date":"2026-09-14","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A1.1.6","text":"Pipelining in multi-core architectures","level":"hl","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCDh-LH9dyuSpmUJAj0FiWoAT--o-CxPPnDjLXN0bxZYXQ","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD899TFBVzSRoQM0ztZAQTGATshpu7ROcI8Ip7aHqtFt1Q"}],"completed":false},{"date":"2026-09-15","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A1.1.7","text":"Internal and external types of secondary memory storage","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBx8w7NwoGMRpmvplPTJnlbAZrun3Y_h8VD75IZyK6IdOU","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD5-MdFVSYKTZHdGgS_dqkGAYHhwrqnffNvDeVT2IKw9hs"},{"code":"A1.1.8","text":"The concept of compression","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAJQKBQAopNQIB7WeIoB5G7ATHHnPzx_MEp-YgtsKUImfM","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBNI2kibkEZTbpAO9tGO7JYASc5LtVfdyV6Adam3wSs-ww"}],"completed":false},{"date":"2026-09-17","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A1.1.9","text":"Different types of services in cloud computing","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDdQL7AxhogQb6AnH57jV63AYqggcDrQqu9eENbsF-htqc","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAYt6Uqa-2ITIfVCTMnQVLQAWtOj1idcIWjgyUtRzgAnRQ"}],"completed":false},{"date":"2026-09-18","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["A1.1.3","A1.1.4","A1.1.5","A1.1.6","A1.1.7","A1.1.8","A1.1.9"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2026-09-21","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A1.2.1","text":"Principal methods of representing data","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB2azY4EuYPS47g4t87IoHcAe0_S2913Idy2phRZ-IoLy8","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD99EMMVfnkTK6__ac33b1wAYHGyqzCOVwtQvBnLNymQRE"}],"completed":false},{"date":"2026-09-22","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A1.2.2","text":"How binary is used to store data","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQA6iu_5WwA6SJZPLtAr3g6TARdTuwjV0mbZiKlOgUiFMVc","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBXEo7V5xKgRaIauRWc9mjOAWd_PbJ8jtOHseFWDLsxKa4"}],"completed":false},{"date":"2026-09-24","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A1.2.3","text":"Purpose and use of logic gates","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCbZmiObwWvSrNdjTlwkxsfAV84qfosGwtZ05mrQFeJpeY","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQARNS945wuMQ5oOySO4GymsAetGkPTR-bkJhKCpj9yfN4o"}],"completed":false},{"date":"2026-09-25","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A1.2.4","text":"Construct and analyse truth tables","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQA7OD3vfdA4QpGSZ6ZjRyTTAaZDiH8vOXTNZuZIfnhmjMk","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBahbnoHmPaSIvM6kyDMb29AcjEdthzJYbgeagm-JVervI"}],"completed":false},{"date":"2026-09-28","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A1.2.5","text":"Construct logic diagrams","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAWW7DXtBNATYrJau7Mz9vFAYcR-VgKLYuH0AcLn_P_cTw","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB49hCh0isuSqZzosMOX9XDATR06e-9-120OgXjrYLaY8M"}],"completed":false},{"date":"2026-09-29","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A1.3.1","text":"Role of operating systems","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQANRXT_T6U5S7OhrCELZvejASI5WJx0eA_ulUcb3ldT1TQ","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBu37BPenHlTL-gl-lPEwb0AYC-XvyOwU8w8Fq9kITOVNI"}],"completed":false},{"date":"2026-10-01","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A1.3.2","text":"Functions of an operating system","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQA_jCxyu9BLT52RnzFz5JrSAdpHAD1zpR9ulLgVaff58ho","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCEgohLIyamR4DNximKEJH3AbXqZSCVwnAABxkX6CgsK4U"}],"completed":false},{"date":"2026-10-02","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["A1.2.1","A1.2.2","A1.2.3","A1.2.4","A1.2.5","A1.3.1","A1.3.2"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2026-10-05","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A1.3.3","text":"Compare different approaches to scheduling","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAmPi5QYgCkSqsL6l9zqagTAb6X7x3tbpbNfynLO_XERno","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCRpFJIrzf-Qb4GGOBmaR7HAa6QptB4LW8HRfzee2eGefE"}],"completed":false},{"date":"2026-10-06","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A1.3.4","text":"Evaluate the use of polling and interrupt handling","level":"core","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQABqi5OB1KFQb4vFGsG_t0rAYzvt5OwSkewklBxBG1gU7g","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD87IBCM5b2QJBWnh00VJUGAfTsSIGP1WbVH4N3ZF5k_p4"}],"completed":false},{"date":"2026-10-08","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A1.3.5","text":"Role of the OS in managing multitasking and resource allocation","level":"hl","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQC445MgmJ8XTLkOfkcQgkxYAfIaHq5Qt4Kifv4UEd4g-dk","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDadIfWLxDTTrjWHaHjPwP_AdSBjC88Pj6Egt8lx39xOcc"}],"completed":false},{"date":"2026-10-09","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A1.3.6","text":"Use of control system components","level":"hl","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCFK-cQTsVOQb2MzLOlD8IOAUadYFdAf4GHuEjCJCL7tKY","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB6rUEEeZVGSqtMyrCm45viAeqfY6ELs8gEz0vpOVScpsY"},{"code":"A1.3.7","text":"Control systems in real-world applications","level":"hl","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCNazoHKSL6TblV3BlXMz6uATA6yiMh0A3FoKm75egyx2g","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCPnRAudSLyT6KuXxADhbPUASh0L6qzI4o5b6cR7r1pueA"}],"completed":false},{"date":"2026-10-12","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A1.4.1","text":"Evaluate interpreters vs compilers","level":"hl","topic":"A1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBx6IzHOI21TKu8ZuqaZB89ATTvX-zyNmdZTFCG3H6J2z0","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDmwbrsGOe-Sa8Wiks-hQ63AZwqYvVhFSPZV3_fy5z8XbI"}],"completed":false},{"date":"2026-10-13","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A2.1.1","text":"Purpose and characteristics of networks","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQARF_scQ195S7PCVqEAJLIzAVe6pOuIjrLrdsRmJ5a-3NY","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCqLdHrJK1YRbvSyO7pBGZxAfHirk8Fm-CPc4vYGhlO1Hk"}],"completed":false},{"date":"2026-11-02","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A2.1.2","text":"Purpose, benefits and limitations of modern digital infrastructures","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDChgrAId4XQIvWJSSWp5U6AQH63nOzA2W9Mo97aDkdGGE","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD8R2ss7ikaRo4jTaRyvo82AQysoBqtLEhLhCO3HLQhLIo"}],"completed":false},{"date":"2026-11-03","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"buffer","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2026-11-05","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A2.1.3","text":"Function of network devices","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDcb-pxhVgeSbZu10sYF8zFAVqKjTSvVWwuIvayPqCNqy0","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAWvv72SBviTqtuGn-QHtFZAYISgBMc1pNfc0MUIC5Gv-Y"}],"completed":false},{"date":"2026-11-06","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["A1.3.3","A1.3.4","A1.3.5","A1.3.6","A1.3.7","A1.4.1","A2.1.1","A2.1.2","A2.1.3"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2026-11-09","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A2.1.4","text":"Network protocols for transport and application","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBT41PfF671Q4eUhhEk8IajAfeuRAsmRaDKaI59gCXPkmE","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDzo0trYLeSR5CPEx-TlrZCActipuYbvaMnW09GQaBBjeI"}],"completed":false},{"date":"2026-11-10","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A2.1.5","text":"Function of the TCP/IP model","level":"hl","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDHXXMQjHwcSbC7sr9DvWrCAYQN1qgTda5O-rvJD_bnFYU","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBTUPhDWHJyRrNuUkYbjtDgAQ_CoBLobI8CVSCSf4FvuEo"},{"code":"A2.2.1","text":"Functions and applications of network topologies","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB_NEb-dQUwS5yhtF84uvLfAfqAWAMX9T9drR47qfErsRo","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDh-91nGRFLRYo6Oo8kEd0EAf-g8TfXkR5-X826F3MbPjg"}],"completed":false},{"date":"2026-11-12","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A2.2.2","text":"Function of servers","level":"hl","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCXhNA0Xf-cSJPY-C9Y356cAc0wDaA8xDKs6un5ERRcXfQ","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCF3hW3zwgYSosc4EQi2qDAAQp-Uoow3bzDFx67mLk5bD8"}],"completed":false},{"date":"2026-11-13","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A2.2.3","text":"Compare and contrast networking models","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCKYw1PiRiiRYoidcjQ1IAkAYY5x1dapyIh-GqOXRgY5VU","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCzFaGPN5yPRIjQZCckdAsuARU_qJ6xf-PXh33cQFYqsLY"}],"completed":false},{"date":"2026-11-16","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A2.2.4","text":"Concepts and applications of network segmentation","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDZC3CJo5aIRKz6spqjMO-_Acm4fNq97jY_z8uXSvomUfQ","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAZHJc1O6D4T547UBnk5QPTAQLFOIWhfM7PDBEl166QXN8"}],"completed":false},{"date":"2026-11-17","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A2.3.1","text":"Different types of IP addressing","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBrHLr0h_hOSK6qKzYv3qFTAZDXN7A566Bn4kSRQssATv0","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDdMxYx1WHLTZNV5T-RN4-CATi8V2YnxXtC8r6yUKF8OoY"}],"completed":false},{"date":"2026-11-19","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A2.3.2","text":"Compare types of media for data transmission","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDPBPAcFaDRQ4DPksVpzHadARnCBg0y1wutIuq2DJV1cEc","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD0Hf-xfFAAQ7mUPea4pRchAaHi8mDGeHVqwsKK7T1i1XI"}],"completed":false},{"date":"2026-11-20","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["A2.1.4","A2.1.5","A2.2.1","A2.2.2","A2.2.3","A2.2.4","A2.3.1","A2.3.2"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2026-11-23","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A2.3.3","text":"How packet switching sends data across a network","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBfZuW3Lw2JQp24Ejf-RCjdATeTW5qy5K7Etam6X69wjLQ","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAoguyH5HPqQpp89Wh_IgB2ATN76umb24BWS2JpwCX5R-w"}],"completed":false},{"date":"2026-11-24","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A2.3.4","text":"How static and dynamic routing move data across LANs","level":"hl","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDJowgn_pojRJ7irWuHwg_UAVtahDX0DAUkRTtUsWZlRMw","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB_b--77y-GTpBqDQuklkQMAT0fTdnN3BRm1WzJpiE2k0g"}],"completed":false},{"date":"2026-11-26","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A2.4.1","text":"Discuss the effectiveness of firewalls","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDdpDTza6j_RbQpKatrWUTDAUv-ckwe3RC8_pW9k5WHzaM","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCjVLaR4b7CQrJoHFDJsjiMAcNDZnqJlLKo2I5gKw629XI"}],"completed":false},{"date":"2026-11-27","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A2.4.2","text":"Common network vulnerabilities","level":"hl","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCzLRi0zdanTJo9ivum62zMAfqqD1LhcHMsErj5DQHhBF8","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB2RWUDTQ5eQ4y7klx1xwM2ATc_Rb8WWt9gx55bJ6Abvwc"}],"completed":false},{"date":"2026-11-30","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A2.4.3","text":"Common network countermeasures","level":"hl","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQC_88HsmsbAS7xtme2M5wq0AQo0L6J-IwXMn9HnwkVdHGs","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCZ4033S2dqTacql3V-i9exAc8WfRTd5o_PdChJzORqbwE"}],"completed":false},{"date":"2026-12-01","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A2.4.4","text":"Encryption and digital certificates","level":"core","topic":"A2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD_7wlOC7OTSol_DA0mD9EGAXNh1hNzBO4qliBMNNw3UV8","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCDLUWayUV3QYp7ZKhw_GWMARWZBETwB95qntEzeF2Dux8"}],"completed":false},{"date":"2026-12-03","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A3.1.1","text":"Features, benefits and limitations of a relational database","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD5xVjmbUzMS6sOFji5kymqAZMMmhH8GKZWClKysnBWvCE","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBWy29x5DwfRZ8rguWwiuaxAbMqUkBShHvhFnky6TDQ4Y8"}],"completed":false},{"date":"2026-12-04","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["A2.3.3","A2.3.4","A2.4.1","A2.4.2","A2.4.3","A2.4.4","A3.1.1"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2026-12-07","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A3.2.1","text":"Describe database schemas","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB4tb1IvlG-QLbcXIiCYRPxAWxKQmCcyH4YMvXUMwvox-g","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDpg0kJOw0bT6qb6IBawgRUAVju_LostaAaJ0Nt2MvUqEs"}],"completed":false},{"date":"2026-12-08","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A3.2.2","text":"Construct ERDs","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAuI66j42U1QqERmYVMYib7AbzW3cURmL1_F_WIRxYxxs8","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQC5-L9OZoanQ7ax21GNRqwtASrC4ij5qSej_NErI4G9KXU"}],"completed":false},{"date":"2026-12-10","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A3.2.3","text":"Data types used in relational databases","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCEGdKdjd0MS6gTX7amTNYIAZakkkdbMVgAxHVeYbSlwvQ","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD5V9wk1mlQTLqBX68x1uU6ATKe1FFK1qL4J2QeuQdbZkg"}],"completed":false},{"date":"2026-12-11","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A3.2.4","text":"Construct tables for relational databases","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQC2YPKgqiv6SZ6iH0hnWGnkAYeQnCZFcCUViSisPsE2Sug","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDBJQojrqv8S7Fe647evsRcAVINSVh0LNT8YjNZpADbh_8"}],"completed":false},{"date":"2026-12-14","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A3.2.5","text":"Difference between normal forms","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQARxvPCRLaoTIs6u4iT1HGqAfIG642Heh9_3Ra5Nyvn6mU","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDIA_WKLnTMQqmeOlYE22uXAdROsrU3F5cg1X8qfh85CSc"}],"completed":false},{"date":"2026-12-15","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"buffer","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-01-07","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A3.2.6","text":"Construct a database normalized to 3NF","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBKy3lmw-JmRZX_BxNW4oclAfc9cjbtHoIbGYSaUHfuXsE","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQALmOXTSpV4Rbm0Hq8ynYsTAbyXkKRmf6MDBe96ASatRIk"}],"completed":false},{"date":"2027-01-08","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["A3.2.1","A3.2.2","A3.2.3","A3.2.4","A3.2.5","A3.2.6"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-01-11","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A3.2.7","text":"Evaluate the need for denormalizing databases","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQC-vBnSTDZnRKD-C4YMB19sAbZPzYoAs47-kjiIxGnggIk","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDs0YFewdZ_TbzlKzWu5FNoAQsbBwV77QSnnWpOdFd3o00"},{"code":"A3.3.1","text":"Differences between data language types within SQL","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCEqoyO6QK7RZZbLYu9NLX4ASsQtjP7NPna6Aa8SDN9gAA","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDRalRtBJvYTojREjPqX0WkAeQTE5VmVtfRKLfKfkcaClE"}],"completed":false},{"date":"2027-01-12","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A3.3.2","text":"Construct queries between two tables in SQL","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB4XLVVuSoSRaOq4zpEbKUCAeWwygc_Q2TUySDea9ECnlE","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDcjBj0cb_FTIEQsRrIzXqdAdKudoxq2VQ9G1cU4lA--UI"}],"completed":false},{"date":"2027-01-14","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A3.3.3","text":"How SQL updates data in a database","level":"core","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDf8ND3nYr1RpRUfhiNMFDyAU7J5I_2Z559NQFUAoJsaBU","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDqP4QPF35nRrfqBNLpC1MWASxhAGwJHk_kjRm6zzdBsf0"},{"code":"A3.3.4","text":"Construct calculations using SQL's aggregate functions","level":"hl","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQChiiznAWi4Q6zQS8FHDuYAAezQxflot0HmfUwWecqKknA","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAxIm115-d_QbnhjKT0i8XUATLVO2IRg-3Uqk_afrOI69c"}],"completed":false},{"date":"2027-01-15","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A3.3.5","text":"Describe different database views","level":"hl","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD1rqkEJT9eTbA98GZ8iGlsAT5Jz77u41P8VnbUVSp8Ufw","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDz1tfhchW9RZMdABtHQuJjAUQ0QAAYmv19FIhELWOFjr0"}],"completed":false},{"date":"2027-01-18","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A3.3.6","text":"How transactions maintain data integrity","level":"hl","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAGzIEnPVnNSLcFDftCa-fdAcffxfAMAgh73aA86hobLzs","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDLsmSW36YSQ7qbCVkV7jwkAfg3qhQXNYbT6rfeJR-FYTU"}],"completed":false},{"date":"2027-01-19","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A3.4.1","text":"Different types of databases as approaches to storing data","level":"hl","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCNnxZ6OdbPTr-vLK0JvxhVAYPNvaDFLTVB8tmdaGkxRZQ","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQC1ElbqIoKZTK4Xybi9vJy8AcoXkYZBlGVzgud25tvkl7M"},{"code":"A3.4.2","text":"Primary objectives of data warehouses","level":"hl","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDN2p8yFQHSQrvNRi9nuR8pAfg2zqh0BZ1pPWQuImTEceQ","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD8y6ATQBDeSpqgMXwmA16CAZM6-RHqGFEdodnIO2MfG0s"}],"completed":false},{"date":"2027-01-21","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A3.4.3","text":"Role of OLAP and data mining for business intelligence","level":"hl","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBTJMr3AWxTTpZxRP5nwtTTASBPzjLVjWB6uYIMk857PNc","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBAzPslWWmeSI5wpFVUKFVdAXJfq1yLQP7Z_OH58oOBLBY"}],"completed":false},{"date":"2027-01-22","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["A3.2.7","A3.3.1","A3.3.2","A3.3.3","A3.3.4","A3.3.5","A3.3.6","A3.4.1","A3.4.2","A3.4.3"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-01-25","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A3.4.4","text":"Features of distributed databases","level":"hl","topic":"A3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAKgukMCR0PTZS1N2MrHtQVAZl8hPurhGeo_7ZubnUvOJw","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBTL4bu59i3TKSXczPVPoWxAZ9HII55VoMvkz-aITGk8BM"}],"completed":false},{"date":"2027-01-26","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A4.1.1","text":"Types of machine learning and their real-world applications","level":"core","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQC6oj234gPiQIPQI6_f-3BbAT6RI5MShbBRQxxWbYHlD2U","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBkcIOVETLFSpAYwoG6A_UaATWwBUYk2ikykVOAgKNnR7s"}],"completed":false},{"date":"2027-01-28","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A4.1.2","text":"Hardware requirements for ML deployment scenarios","level":"core","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBM6lsaHCtTRYsggpvVc9h9ASu7SZG8KBdS6ESqQ9l5QEM","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBVjAUsjBR9T6rrlcV0oE0dAYWH4Ol8q0300WJ5CDkck6A"}],"completed":false},{"date":"2027-01-29","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A4.2.1","text":"Significance of data cleaning","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQA1J-AgPu8URYPCPmg7sNpJAZC0_Z05i8bGuj7jB74vimw","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD7d88h7Ko2TqD-9xSns5nTAZhSTo_C3rBBNJB46eY-qPs"}],"completed":false},{"date":"2027-02-01","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A4.2.2","text":"Role of feature selection","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBGLZhYTDZrSb-CVGvTKRL0AYIapzcBSIRIGX3sxwAm1qs","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCfXbYPtubkS5vOvvjUOiWVAUmiKmIiQmLP_pK252noDMQ"},{"code":"A4.2.3","text":"Importance of dimensionality reduction","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBViMwW7YiMTbFrwmqlwe5LAVMBvYoB9Kui7aAW9rt-73I","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBuL9rzwyq-Q6kA_GygD8sCAZHz6rJahAKnGudKh4B4uF0"}],"completed":false},{"date":"2027-02-02","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A4.3.1","text":"Linear regression for continuous prediction","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBtL7QXk0zuRZxx1koZplZTAXrZpX9-CS3p31ngU6YsFIs","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDanag4kWoVTbE-WEeX0kP2AZnyfm5wYMAQj0Om7xy0hQM"}],"completed":false},{"date":"2027-02-04","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A4.3.2","text":"Classification for discrete categorical outcomes","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD-Zu8e8xKKT5njEPyTjKpNAYcpRjrcHOzvL89ElWB6OcE","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDayCdFCTg2RZnhvNJ6446XAZBNJaQ-55uYJE-bVpvENXQ"}],"completed":false},{"date":"2027-02-05","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["A3.4.4","A4.1.1","A4.1.2","A4.2.1","A4.2.2","A4.2.3","A4.3.1","A4.3.2"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-02-08","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A4.3.3","text":"Hyperparameter tuning in supervised learning","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBs8X4TWlDiQ6k0_bpCHeDUAYdyyJVOgoGc7g1J1sDbyP4","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCZSZC9LEMeQZxfLuJAyBV3ARbiQnZgX6Zp9P4FHj47UOA"}],"completed":false},{"date":"2027-02-09","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A4.3.4","text":"Clustering in unsupervised learning","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDAkpM6Y-wmR4hc0n1dpX8BAbhE5r98n_FCm8jnLhSDYQ4","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQC1Iu7e8khnQpdSCTxOZGxKAb57KYoy6Opk6zWCGyMMum0"},{"code":"A4.3.5","text":"Association rule learning","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBVH6m-WEm9Q4Nx-9VVoe7gASNQh__3swIcHG8wvMlCbls","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCgwhvVpd1VT5qHtimwcA7HAdk9_h0euBn-9YmhHX9Ku2M"}],"completed":false},{"date":"2027-02-11","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A4.3.6","text":"How agents learn via reinforcement learning","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBwS3yt0nqoQ47rrqlSGrulAUAYachW4MtdDmawgjgDEmI","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQChqqonQGYiSoV9TN8atVg0AR-wH3I4kGpHerVxdyMTLv4"}],"completed":false},{"date":"2027-02-12","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A4.3.7","text":"Genetic algorithms in real-world situations","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB61dvX2-9xQYF-ddH3kn1xAYZjM64V-NJI6_abeXPq4P0","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQChqiK8xWBiR6e2rkPi__eUAQxmPNGQw6LOFlZRd6arc8M"}],"completed":false},{"date":"2027-02-22","day":"Monday","period":"P1","time":"08:55-09:55","type":"buffer","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-02-23","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A4.3.8","text":"Structure and function of ANNs / multi-layer networks","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDLNhXOjPTLRbiPP_0SlLInAY0DGmkevVcrX6BZ5Br1xNY","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQC787BCaQMUQ7Q_B3ZExxN7AWoziuKk5gd9YAHg1aREx58"}],"completed":false},{"date":"2027-02-25","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A4.3.9","text":"How CNNs learn spatial hierarchies in images","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDI8g1a3Ed0Rpc2nyu7yQN0AfliteS6i7I5SruSEIJdSGI","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCBE_NFHYAIRrqufcfUzgRxAUhFijgpoeJ11LvmC3-Oq_w"}],"completed":false},{"date":"2027-02-26","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["A4.3.3","A4.3.4","A4.3.5","A4.3.6","A4.3.7","A4.3.8","A4.3.9"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-03-01","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"A4.3.10","text":"Importance of model selection and comparison","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBhMnUWJroqTa8NpmWFxYMdAbRq1LRfNRQDQ3hCgtF2CMI","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCEYPP2bkBOQ7-y9-7XHX4PAaxH4Y0ybmMx9K6gZp_qrkI"}],"completed":false},{"date":"2027-03-02","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"A4.4.1","text":"Ethical implications of machine learning in real-world scenarios","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBgc5Qp7XyhS6-FTKOEDS-ZAaLZSaOCWHltu_u7GKevFBk","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDmSGq5PRCOTYIeeJLBaR4IAUxH_0ploUJHrbBwvQhKLZQ"}],"completed":false},{"date":"2027-03-04","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"A4.4.2","text":"Ethics of increasing integration of computer technologies into daily life","level":"hl","topic":"A4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQA4anOVjw6iSrdMES-7D23DAZeXYGlKCC_HBtk1RkGsE8c","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAHCYobffI9TbY55iMSbJbnAYs6m5acmrML_rFw7w_XuIs"}],"completed":false},{"date":"2027-03-05","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B1.1.1","text":"Construct a problem specification","level":"core","topic":"B1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDQmTHrjUYPQL4f6iV608T-AX8-t_qfqpRlXznHi9y3ruE","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDjqxi8nFT6TYOcB4V9ZVcTAXC_8uwpfMmEHsQ9rP3T8Gc"}],"completed":false},{"date":"2027-03-08","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B1.1.2","text":"Fundamental concepts of computational thinking","level":"core","topic":"B1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDY0HctxreHTaU6LRJTVZi9ASnQY6nlysfgtPATEbOR2Vo","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAEmqLUJy_8T5l5AcDBMbmRAUvYujCP47oPGE7fihNuxqw"}],"completed":false},{"date":"2027-03-09","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"B1.1.3","text":"Applying computational thinking to solve problems","level":"core","topic":"B1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBipD_9CSIvT7R8d9_PYleKAa-texVWsl_u5vaYjICBk_8","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCVuRJKlmOsTI6HosRb5KIgAUXT5tChhD9mS1E6SQjORls"}],"completed":false},{"date":"2027-03-11","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"B1.1.4","text":"Trace flowcharts for programming algorithms","level":"core","topic":"B1","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB-y0o28J9WRr-1NLeLwX1hAfIgJJF0WG_XL45Bdg66d0M","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDIwurokluBTbn4XVYi4KF4ATxGomC7Ip8cr6lZiEKi79o"}],"completed":false},{"date":"2027-03-12","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["A4.3.10","A4.4.1","A4.4.2","B1.1.1","B1.1.2","B1.1.3","B1.1.4"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-03-15","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B2.1.1","text":"Construct/trace programs using global and local variables","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCItQtc3xOlRqgou402obUrAQwKLrwSX1IS_iCmAdU27yg","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDTlIQ1nEghRoAkOK5Ce3eMAcDeZ50dKwK4aFaiPST_ox4"}],"completed":false},{"date":"2027-03-16","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"B2.1.2","text":"Construct programs that extract and manipulate substrings","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAzGxESdZbSQIUHd5oi6slQAeAnX9olnD7Q5KvgBhNQqmQ","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDyPHhmX0esR7LYfTdU5VhzAVkUM4F9qH5ZjSlmwP9TeUo"}],"completed":false},{"date":"2027-03-18","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"B2.1.3","text":"Common exception handling techniques","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBxcLxoFUQjSb9ez2wzrsYTAQUCFd5bYlu_I_eMCso7rPo","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDdV6q0QkQaT5HDYyqFgMI5Ae5_yCwxFPhcNSLPpKcX7SI"},{"code":"B2.1.4","text":"Common debugging techniques","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB-Pt60KyEySZH7hSsJ16t9AYwnTckgL4vZuAi2-cncFko","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBQS5nyAwB_T5cW9MtJXHv9AZXghzq1MG3o0vRgCVAqp98"}],"completed":false},{"date":"2027-03-19","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B2.2.1","text":"Compare static and dynamic data structures","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBImv9Qe3yaQ4AANewfCAd0AZTEHBO43awDkH10k6mWk0c","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAfOGx9stzYRI5hPIoMOKS-AeWoZMFA8taPeiz0V6isxBA"}],"completed":false},{"date":"2027-03-22","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B2.2.2","text":"Construct programs that apply arrays and Lists","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQABIRfKFim5R6VjU5jlhJT6AWJ3dCLczrNQZASpqwH4FZs","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDWGRNBO4-nQrWTpCu0tpcZAXWKgFxy6tzgD0ZnM1lK1P8"}],"completed":false},{"date":"2027-03-23","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"B2.2.3","text":"Concept of a stack (LIFO)","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBwbjDgNjA0Ta3JgFa-o7JRAfl_SwoW7KfEHnRDWsA8eqU","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB0YucPr0QFSJ1zQlvn4R3WAZYckDe55rwYbwxh18ywk5k"},{"code":"B2.2.4","text":"Concept of a queue (FIFO)","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCAxnJ5soUUR5gv5vTmY3k6ATGHoFL1GPmHbqu0YkqR2Q4","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAmmx4AbLOKS4brrvo5LO_wAUjE2tTfBYe6Qdoe60w9_D0"}],"completed":false},{"date":"2027-03-25","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"B2.3.1","text":"Correct sequencing of code instructions","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAY9APNwPeAT79okWRtU8y4AcaaKnj10ShkE-35AyibXCw","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCvCnfqs6pPSKTca2kamDGnAViRNYOoCZQcKOx_W8j9xTw"}],"completed":false},{"date":"2027-03-26","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["B2.1.1","B2.1.2","B2.1.3","B2.1.4","B2.2.1","B2.2.2","B2.2.3","B2.2.4","B2.3.1"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-04-12","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B2.3.2","text":"Programs using selection structures","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCFCx_gIH6aSqWUZLaOY4eOAZQi5XLe_7U-RaC1eGtV3Xg","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBAv-vVI4zzSapxke9luliNAfzk5_dcSXy2tyO-lzQj-MU"}],"completed":false},{"date":"2027-04-13","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"B2.3.3","text":"Programs using looping structures","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCMggNfnGZ0QKP734chR01LAbUpaO3rEzb2uDi_IdqPo1E","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDg-qted89_QY6X236XufggARs-Q3OMTnokgictEtr_hhc"}],"completed":false},{"date":"2027-04-15","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"B2.3.4","text":"Construct functions and modularization","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCkSAv50g0mS6PqpqacxoTrAda5grR4AS3OGaZwhTFIikA","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBE1DpiBpvxRrYRQG6en-fuARPijEo8i8N3qfbROQNANYo"}],"completed":false},{"date":"2027-04-16","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B2.4.1","text":"Algorithm efficiency via Big O notation","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDwanVWtXJAR6Qd848br72HAQ53FJ4Z75H0rDGIgbPhY6k","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAhgaMhXhlpS6yyusIWAzqlAb1DBsFaSAJzOrceRw3zrtU"}],"completed":false},{"date":"2027-04-19","day":"Monday","period":"P1","time":"08:55-09:55","type":"buffer","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-04-20","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"B2.4.2","text":"Construct/trace linear and binary search","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBGC3D4UaBNQ7HBAs-stnUUASgI7xmdfVGoZ5n7j-tlFmY","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAffdtUONCcS6uyZemE3hpZAdzDw_HlvLcK0EkzHfYeId8"}],"completed":false},{"date":"2027-04-22","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"B2.4.3","text":"Construct/trace bubble sort and selection sort","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBazEYRV5BITJaNipuygAyQAXjou3P5cESgiI3nmfaTWbs","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCH5KwGZl0UT6YK2du111njATwl25RWSxmvBZ4f11F6ey8"}],"completed":false},{"date":"2027-04-23","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["B2.3.2","B2.3.3","B2.3.4","B2.4.1","B2.4.2","B2.4.3"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-04-26","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B2.4.4","text":"Recursion and its applications","level":"hl","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBqLbnEelGCTLtbdUSabiTwARESIwl0b9KXvBLkmaM2yao","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBl_idDr5A1TqqDk7IoKc5TAQVXqM0E1biJz8sHzHqEHHY"},{"code":"B2.4.5","text":"Construct/trace recursive algorithms","level":"hl","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQD-3wxnZXeqQ4Kit_KoCHEAAZ1SWplhEGNXEVXTVQxWneA","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAR78EaVCELQ4LQIME8K7VQAT_jxT8CZ_OqMY48U35Z21Y"}],"completed":false},{"date":"2027-04-27","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"B2.5.1","text":"Construct code to perform file-processing operations","level":"core","topic":"B2","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBf2zbuuT7wRacBESf0Y4SKAZFoewT6vkl6VEmutRAlsO4","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDindNerY_aRaASzvMV8xPwAcus8xzhy3YGIBCCO2-PIzk"}],"completed":false},{"date":"2027-04-29","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"B3.1.1","text":"Evaluate the fundamentals of OOP","level":"core","topic":"B3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAu0Gi5XBkXRrrr4QEh3ow6Afx7fCTOCzaD8YmZyT2V8ug","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBOTlyIQenETZrEkrF1tc0cAURnIOT5BdOPxWJjSyKav3Y"}],"completed":false},{"date":"2027-04-30","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B3.1.2","text":"Design classes, their methods and behaviour","level":"core","topic":"B3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBxElAa7DChRY5kKS-IMpkJAds9MFJlNvQ2FFjuickP2hM","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBTuqMecbtFTqjcVnhXA4v1AW74Oevkncmv7NaMs_gjhyA"}],"completed":false},{"date":"2027-05-03","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B3.1.3","text":"Distinguish static and non-static variables and methods","level":"core","topic":"B3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAjomFL_5slQ67yaaFzu4AtAcbHzMjnIx29Gqv6-hwRAJk","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAfqUCxA9fbQqNzbbIamu8hAXM0yTUvd6oUTx5TZUP_UUI"}],"completed":false},{"date":"2027-05-04","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"B3.1.4","text":"Construct code to define classes and instantiate objects","level":"core","topic":"B3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCEFZRic-pdTKHhZVs8vEUrAclfjzSYi_pamm9g-K2plWc","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAxtCDD6zbySK5wzvdlKjtkAfg9JDTqpQx3aSVb6gRjciw"}],"completed":false},{"date":"2027-05-06","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"B3.1.5","text":"Encapsulation and information hiding","level":"core","topic":"B3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB9vbGByh2lSIf7YJMTUYcFAXHhnF5hSc183Y4Eb9ebXiY","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBnYyRkdG61R7poDl7AAfNYAducODAFe4UpQSPI3J1N6Co"}],"completed":false},{"date":"2027-05-07","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["B2.4.4","B2.4.5","B2.5.1","B3.1.1","B3.1.2","B3.1.3","B3.1.4","B3.1.5"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-05-10","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B3.2.1","text":"Inheritance to promote code reusability","level":"hl","topic":"B3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDHPMRgrWv0TrykeK-IS50bAeKeyRt79RHHyNLBizH105Q","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQB47Hh5yWoYT5IuqhkKdtecAZ5DDC_vljl0mxtP3ocFLw4"}],"completed":false},{"date":"2027-05-11","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"B3.2.2","text":"Model polymorphism","level":"hl","topic":"B3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDpuAaxnpVGT6_QvzZ-WRRqAdhtXScMAc93bhLV_fz3ewE","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAHt5x8W4CcTYKpFU2WAQVGAQrmPqF3mB01V0YJJrvlB_k"},{"code":"B3.2.3","text":"Concept of abstraction in OOP","level":"hl","topic":"B3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCXPrfdkUu9Rr7fwwqd5N3IAfvXM8xOWsN6CuUAmV3ToG4","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAlT2qQXaXcS5uhefl7BOP-AYsZRoQmU5i3Xhx0Ka9OOsw"}],"completed":false},{"date":"2027-05-13","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"B3.2.4","text":"Role of composition and aggregation","level":"hl","topic":"B3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCPWRPfm0hDS48eEqy3J1BvAdfhyAsiqqucYjUKjmF-UWs","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAoN8s5Yxe1Q4NxB4NoSTYeAfuVuhtkv0otRkVWWJQgv1s"}],"completed":false},{"date":"2027-05-14","day":"Friday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B3.2.5","text":"Commonly used design patterns in OOP","level":"hl","topic":"B3","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCLwR5xrq3WRJKEaDlUmstDAaoNLk6WoN6-SatVn6brTu0","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAkUme2RtLGSLCFibBjN4j1AaMsnnbaWJVKrET_h65304o"}],"completed":false},{"date":"2027-05-17","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B4.1.1","text":"Properties and purpose of ADTs in programming","level":"hl","topic":"B4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCvbinNIcNhRLGsOtinDklpAdptMC6Y1NHKVOO9txbyqAg","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBPIusrdeCyQJzJF6lLw6UxAU8jo9P4U1g7b8a2LRe2dYs"}],"completed":false},{"date":"2027-05-18","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"B4.1.2","text":"Evaluate linked lists","level":"hl","topic":"B4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCTEpTmfryqQLWcCWADmWzcAdIrlPsfPz_l84DrYe_uqiE","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDNIP4mGZloTo1fwLIMYYFoAYIn7oQJjcrJQOeROl8w8sQ"}],"completed":false},{"date":"2027-05-20","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"B4.1.3","text":"Construct and apply linked lists","level":"hl","topic":"B4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQCra1CfHmMaQJXnU6ExmufZAcFPiK5EA7DdtBSIIXpkric","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAVNy31rFLqQod453xmTuAiAW-KzDNyAAFHmzWy1LDARkQ"}],"completed":false},{"date":"2027-05-21","day":"Friday","period":"P1","time":"08:55-09:55","type":"assessment","items":[],"assessedCodes":["B3.2.1","B3.2.2","B3.2.3","B3.2.4","B3.2.5","B4.1.1","B4.1.2","B4.1.3"],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-05-24","day":"Monday","period":"P1","time":"08:55-09:55","type":"content","items":[{"code":"B4.1.4","text":"Structures and properties of BSTs","level":"hl","topic":"B4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQA64GLzqdfKTbNtwBExg8-uAWuArPMbw3bO_XUFE5yTJuA","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQBgh8I6W4_lR5qiKn0qvOzFAflxlW7qScpP-JktWrLcWtQ"}],"completed":false},{"date":"2027-05-25","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"content","items":[{"code":"B4.1.5","text":"Construct and apply sets as an ADT","level":"hl","topic":"B4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQDvMtKpe52rRJuo3nfrl5E-AdG_8XyFyDX5fDqz8hU9vpU","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQC6-6VGK5PrR7MlTZDpCI-IAWZoAAUhJYd-meo80Hp1cYA"}],"completed":false},{"date":"2027-05-27","day":"Thursday","period":"P4","time":"13:30-14:30","type":"content","items":[{"code":"B4.1.6","text":"Core principles of ADTs \u2014 hash-based structures","level":"hl","topic":"B4","slidesUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQABnxwlHBQ8T7nJcmt1eGmeAbDMQ6UUSTO9NNbmKhDD7ro","exitTicketUrl":"https://1drv.ms/p/c/30bbc0bf7f3a2efb/IQAGUEkQasrlSpzYWCNiuIkVAcHLLcy47Qg8OswFv0YBpqI"}],"completed":false},{"date":"2027-05-28","day":"Friday","period":"P1","time":"08:55-09:55","type":"buffer","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-05-31","day":"Monday","period":"P1","time":"08:55-09:55","type":"ia","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-06-01","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"ia","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-06-03","day":"Thursday","period":"P4","time":"13:30-14:30","type":"ia","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-06-04","day":"Friday","period":"P1","time":"08:55-09:55","type":"ia","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-06-07","day":"Monday","period":"P1","time":"08:55-09:55","type":"ia","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-06-08","day":"Tuesday","period":"P3","time":"11:30-12:30","type":"ia","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-06-10","day":"Thursday","period":"P4","time":"13:30-14:30","type":"ia","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""},{"date":"2027-06-11","day":"Friday","period":"P1","time":"08:55-09:55","type":"ia","items":[],"completed":false,"slidesUrl":"","exitTicketUrl":""}];
+const CATALOG = [{"code":"A1.1.1","text":"Functions and interactions of the main CPU components","detail":"ALU, control unit, registers (IR, PC, MAR, MDR, AC), buses, single/multi-core, co-processors","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.1","subtopic_title":"Computer Hardware and Operation","hours":0.8182,"done_already":true},{"code":"A1.1.2","text":"Role of a GPU","detail":"Parallel architecture; gaming, AI, simulations, rendering, ML","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.1","subtopic_title":"Computer Hardware and Operation","hours":0.8182,"done_already":true},{"code":"A1.1.3","text":"Differences between the CPU and the GPU","detail":"Architecture, processing power, memory access, power efficiency, collaboration","level":"hl","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.1","subtopic_title":"Computer Hardware and Operation","hours":0.8182,"done_already":false},{"code":"A1.1.4","text":"Purposes of different types of primary memory","detail":"RAM, ROM, cache (L1/L2/L3), registers; cache hit/miss","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.1","subtopic_title":"Computer Hardware and Operation","hours":0.8182,"done_already":false},{"code":"A1.1.5","text":"The fetch, decode and execute cycle","detail":"Memory/register interaction via address, data, control buses","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.1","subtopic_title":"Computer Hardware and Operation","hours":0.8182,"done_already":false},{"code":"A1.1.6","text":"Pipelining in multi-core architectures","detail":"Fetch/decode/execute/write-back stages; independent parallel cores","level":"hl","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.1","subtopic_title":"Computer Hardware and Operation","hours":0.8182,"done_already":false},{"code":"A1.1.7","text":"Internal and external types of secondary memory storage","detail":"SSD, HDD, eMMC, optical drives, flash drives, NAS","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.1","subtopic_title":"Computer Hardware and Operation","hours":0.8182,"done_already":false},{"code":"A1.1.8","text":"The concept of compression","detail":"Lossy vs lossless; run-length encoding, transform coding","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.1","subtopic_title":"Computer Hardware and Operation","hours":0.8182,"done_already":false},{"code":"A1.1.9","text":"Different types of services in cloud computing","detail":"SaaS, PaaS, IaaS \u2014 control, flexibility, resource management","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.1","subtopic_title":"Computer Hardware and Operation","hours":0.8182,"done_already":false},{"code":"A1.2.1","text":"Principal methods of representing data","detail":"Binary/hexadecimal/decimal conversion","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.2","subtopic_title":"Data Representation and Computer Logic","hours":0.8182,"done_already":false},{"code":"A1.2.2","text":"How binary is used to store data","detail":"Integers, strings, characters, images, audio, video","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.2","subtopic_title":"Data Representation and Computer Logic","hours":0.8182,"done_already":false},{"code":"A1.2.3","text":"Purpose and use of logic gates","detail":"Boolean operators: AND, OR, NOT, NAND, NOR, XOR, XNOR","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.2","subtopic_title":"Data Representation and Computer Logic","hours":0.8182,"done_already":false},{"code":"A1.2.4","text":"Construct and analyse truth tables","detail":"Karnaugh maps and algebraic simplification","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.2","subtopic_title":"Data Representation and Computer Logic","hours":0.8182,"done_already":false},{"code":"A1.2.5","text":"Construct logic diagrams","detail":"Standard gate symbols; Boolean algebra simplification","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.2","subtopic_title":"Data Representation and Computer Logic","hours":0.8182,"done_already":false},{"code":"A1.3.1","text":"Role of operating systems","detail":"Abstracting hardware complexity to manage resources","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.3","subtopic_title":"Operating Systems and Control Systems","hours":0.8182,"done_already":false},{"code":"A1.3.2","text":"Functions of an operating system","detail":"Memory, file system, device mgmt, scheduling, security, GUI, virtualization, networking","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.3","subtopic_title":"Operating Systems and Control Systems","hours":0.8182,"done_already":false},{"code":"A1.3.3","text":"Compare different approaches to scheduling","detail":"FCFS, round robin, multilevel queue, priority","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.3","subtopic_title":"Operating Systems and Control Systems","hours":0.8182,"done_already":false},{"code":"A1.3.4","text":"Evaluate the use of polling and interrupt handling","detail":"Overhead, power, predictability, latency, security","level":"core","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.3","subtopic_title":"Operating Systems and Control Systems","hours":0.8182,"done_already":false},{"code":"A1.3.5","text":"Role of the OS in managing multitasking and resource allocation","detail":"Task scheduling, resource contention, deadlock","level":"hl","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.3","subtopic_title":"Operating Systems and Control Systems","hours":0.8182,"done_already":false},{"code":"A1.3.6","text":"Use of control system components","detail":"Input, process, output, feedback (open/closed loop); controller, sensors, actuators","level":"hl","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.3","subtopic_title":"Operating Systems and Control Systems","hours":0.8182,"done_already":false},{"code":"A1.3.7","text":"Control systems in real-world applications","detail":"Autonomous vehicles, thermostats, elevators, traffic signals, irrigation","level":"hl","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.3","subtopic_title":"Operating Systems and Control Systems","hours":0.8182,"done_already":false},{"code":"A1.4.1","text":"Evaluate interpreters vs compilers","detail":"Error detection, translation time, portability; JIT and bytecode","level":"hl","topic_code":"A1","topic_title":"Computer Fundamentals","theme":"A","subtopic_code":"A1.4","subtopic_title":"Translation","hours":0.8182,"done_already":false},{"code":"A2.1.1","text":"Purpose and characteristics of networks","detail":"LAN, WAN, PAN, VPN","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.1","subtopic_title":"Network Fundamentals","hours":1.0588,"done_already":false},{"code":"A2.1.2","text":"Purpose, benefits and limitations of modern digital infrastructures","detail":"Internet, cloud, distributed systems, edge computing, mobile networks","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.1","subtopic_title":"Network Fundamentals","hours":1.0588,"done_already":false},{"code":"A2.1.3","text":"Function of network devices","detail":"Gateways, firewalls, modems, NICs, routers, switches, access points","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.1","subtopic_title":"Network Fundamentals","hours":1.0588,"done_already":false},{"code":"A2.1.4","text":"Network protocols for transport and application","detail":"TCP, UDP, HTTP, HTTPS, DHCP","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.1","subtopic_title":"Network Fundamentals","hours":1.0588,"done_already":false},{"code":"A2.1.5","text":"Function of the TCP/IP model","detail":"Application, transport, internet, network interface layers","level":"hl","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.1","subtopic_title":"Network Fundamentals","hours":1.0588,"done_already":false},{"code":"A2.2.1","text":"Functions and applications of network topologies","detail":"Star, mesh, hybrid","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.2","subtopic_title":"Network Architecture","hours":1.0588,"done_already":false},{"code":"A2.2.2","text":"Function of servers","detail":"DNS, DHCP, file, mail, proxy, web servers","level":"hl","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.2","subtopic_title":"Network Architecture","hours":1.0588,"done_already":false},{"code":"A2.2.3","text":"Compare and contrast networking models","detail":"Client\u2013server vs peer-to-peer","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.2","subtopic_title":"Network Architecture","hours":1.0588,"done_already":false},{"code":"A2.2.4","text":"Concepts and applications of network segmentation","detail":"Subnetting, VLANs","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.2","subtopic_title":"Network Architecture","hours":1.0588,"done_already":false},{"code":"A2.3.1","text":"Different types of IP addressing","detail":"IPv4/IPv6, public/private, static/dynamic, NAT","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.3","subtopic_title":"Data Transmissions","hours":1.0588,"done_already":false},{"code":"A2.3.2","text":"Compare types of media for data transmission","detail":"Fibre optic, twisted pair, wireless","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.3","subtopic_title":"Data Transmissions","hours":1.0588,"done_already":false},{"code":"A2.3.3","text":"How packet switching sends data across a network","detail":"Segmentation, routing headers, reassembly","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.3","subtopic_title":"Data Transmissions","hours":1.0588,"done_already":false},{"code":"A2.3.4","text":"How static and dynamic routing move data across LANs","detail":"Configuration, maintenance, convergence, scalability","level":"hl","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.3","subtopic_title":"Data Transmissions","hours":1.0588,"done_already":false},{"code":"A2.4.1","text":"Discuss the effectiveness of firewalls","detail":"Whitelists, blacklists, rules; NAT security role","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.4","subtopic_title":"Network Security","hours":1.0588,"done_already":false},{"code":"A2.4.2","text":"Common network vulnerabilities","detail":"DDoS, malware, MitM, phishing, SQL injection, XSS, zero-day exploits","level":"hl","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.4","subtopic_title":"Network Security","hours":1.0588,"done_already":false},{"code":"A2.4.3","text":"Common network countermeasures","detail":"Encryption, IDS/IPS, MFA, VPNs, security testing and training","level":"hl","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.4","subtopic_title":"Network Security","hours":1.0588,"done_already":false},{"code":"A2.4.4","text":"Encryption and digital certificates","detail":"Symmetric vs asymmetric cryptography; public/private keys","level":"core","topic_code":"A2","topic_title":"Networks","theme":"A","subtopic_code":"A2.4","subtopic_title":"Network Security","hours":1.0588,"done_already":false},{"code":"A3.1.1","text":"Features, benefits and limitations of a relational database","detail":"Keys, relationships, tables; scalability and schema rigidity trade-offs","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.1","subtopic_title":"Database Fundamentals","hours":1.0,"done_already":false},{"code":"A3.2.1","text":"Describe database schemas","detail":"Conceptual, logical, physical","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.2","subtopic_title":"Database Design","hours":1.0,"done_already":false},{"code":"A3.2.2","text":"Construct ERDs","detail":"Entities, relationships, cardinality, modality","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.2","subtopic_title":"Database Design","hours":1.0,"done_already":false},{"code":"A3.2.3","text":"Data types used in relational databases","detail":"Consistency; effects of incorrect data types","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.2","subtopic_title":"Database Design","hours":1.0,"done_already":false},{"code":"A3.2.4","text":"Construct tables for relational databases","detail":"Primary, foreign, composite, concatenated keys","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.2","subtopic_title":"Database Design","hours":1.0,"done_already":false},{"code":"A3.2.5","text":"Difference between normal forms","detail":"1NF, 2NF, 3NF; functional/partial/transitive dependencies","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.2","subtopic_title":"Database Design","hours":1.0,"done_already":false},{"code":"A3.2.6","text":"Construct a database normalized to 3NF","detail":"Real-world scenarios: library, hospital, e-commerce, school","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.2","subtopic_title":"Database Design","hours":1.0,"done_already":false},{"code":"A3.2.7","text":"Evaluate the need for denormalizing databases","detail":"Query simplicity vs redundancy trade-offs","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.2","subtopic_title":"Database Design","hours":1.0,"done_already":false},{"code":"A3.3.1","text":"Differences between data language types within SQL","detail":"DDL and DML","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.3","subtopic_title":"Database Programming","hours":1.0,"done_already":false},{"code":"A3.3.2","text":"Construct queries between two tables in SQL","detail":"Joins, filtering, pattern matching, ordering","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.3","subtopic_title":"Database Programming","hours":1.0,"done_already":false},{"code":"A3.3.3","text":"How SQL updates data in a database","detail":"INSERT, UPDATE, DELETE","level":"core","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.3","subtopic_title":"Database Programming","hours":1.0,"done_already":false},{"code":"A3.3.4","text":"Construct calculations using SQL's aggregate functions","detail":"AVERAGE, COUNT, MAX, MIN, SUM","level":"hl","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.3","subtopic_title":"Database Programming","hours":1.0,"done_already":false},{"code":"A3.3.5","text":"Describe different database views","detail":"Virtual views and materialized views","level":"hl","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.3","subtopic_title":"Database Programming","hours":1.0,"done_already":false},{"code":"A3.3.6","text":"How transactions maintain data integrity","detail":"ACID properties; BEGIN/COMMIT/ROLLBACK","level":"hl","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.3","subtopic_title":"Database Programming","hours":1.0,"done_already":false},{"code":"A3.4.1","text":"Different types of databases as approaches to storing data","detail":"NoSQL, cloud, spatial, in-memory","level":"hl","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.4","subtopic_title":"Alternative Databases and Data Warehouses","hours":1.0,"done_already":false},{"code":"A3.4.2","text":"Primary objectives of data warehouses","detail":"Subject-oriented, integrated, time-variant, non-volatile data","level":"hl","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.4","subtopic_title":"Alternative Databases and Data Warehouses","hours":1.0,"done_already":false},{"code":"A3.4.3","text":"Role of OLAP and data mining for business intelligence","detail":"Classification, clustering, regression, association rules","level":"hl","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.4","subtopic_title":"Alternative Databases and Data Warehouses","hours":1.0,"done_already":false},{"code":"A3.4.4","text":"Features of distributed databases","detail":"Consistency, partitioning, replication, fault tolerance","level":"hl","topic_code":"A3","topic_title":"Databases","theme":"A","subtopic_code":"A3.4","subtopic_title":"Alternative Databases and Data Warehouses","hours":1.0,"done_already":false},{"code":"A4.1.1","text":"Types of machine learning and their real-world applications","detail":"Supervised, unsupervised, reinforcement, deep, transfer learning","level":"core","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.1","subtopic_title":"Machine Learning Fundamentals","hours":1.0588,"done_already":false},{"code":"A4.1.2","text":"Hardware requirements for ML deployment scenarios","detail":"Laptops to GPUs, TPUs, FPGAs, ASICs, cloud/HPC","level":"core","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.1","subtopic_title":"Machine Learning Fundamentals","hours":1.0588,"done_already":false},{"code":"A4.2.1","text":"Significance of data cleaning","detail":"Outliers, duplicates, missing data; normalization/standardization","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.2","subtopic_title":"Data Preprocessing","hours":1.0588,"done_already":false},{"code":"A4.2.2","text":"Role of feature selection","detail":"Filter, wrapper, embedded methods","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.2","subtopic_title":"Data Preprocessing","hours":1.0588,"done_already":false},{"code":"A4.2.3","text":"Importance of dimensionality reduction","detail":"Curse of dimensionality: overfitting, sparsity, complexity","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.2","subtopic_title":"Data Preprocessing","hours":1.0588,"done_already":false},{"code":"A4.3.1","text":"Linear regression for continuous prediction","detail":"Slope, intercept, model fit (r\u00b2)","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.3","subtopic_title":"Machine Learning Approaches","hours":1.0588,"done_already":false},{"code":"A4.3.2","text":"Classification for discrete categorical outcomes","detail":"K-Nearest Neighbours, decision trees","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.3","subtopic_title":"Machine Learning Approaches","hours":1.0588,"done_already":false},{"code":"A4.3.3","text":"Hyperparameter tuning in supervised learning","detail":"Accuracy, precision, recall, F1; overfitting/underfitting","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.3","subtopic_title":"Machine Learning Approaches","hours":1.0588,"done_already":false},{"code":"A4.3.4","text":"Clustering in unsupervised learning","detail":"Grouping by feature similarity, e.g. customer segmentation","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.3","subtopic_title":"Machine Learning Approaches","hours":1.0588,"done_already":false},{"code":"A4.3.5","text":"Association rule learning","detail":"Uncovering relations between attributes in large datasets","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.3","subtopic_title":"Machine Learning Approaches","hours":1.0588,"done_already":false},{"code":"A4.3.6","text":"How agents learn via reinforcement learning","detail":"Actions, states, rewards, policies; exploration vs exploitation","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.3","subtopic_title":"Machine Learning Approaches","hours":1.0588,"done_already":false},{"code":"A4.3.7","text":"Genetic algorithms in real-world situations","detail":"Population, fitness, selection, crossover, mutation; optimization","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.3","subtopic_title":"Machine Learning Approaches","hours":1.0588,"done_already":false},{"code":"A4.3.8","text":"Structure and function of ANNs / multi-layer networks","detail":"Input, weights, bias, activation function, hidden layers","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.3","subtopic_title":"Machine Learning Approaches","hours":1.0588,"done_already":false},{"code":"A4.3.9","text":"How CNNs learn spatial hierarchies in images","detail":"Convolutional, pooling, fully connected layers","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.3","subtopic_title":"Machine Learning Approaches","hours":1.0588,"done_already":false},{"code":"A4.3.10","text":"Importance of model selection and comparison","detail":"Matching algorithm to problem, complexity, desired outcome","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.3","subtopic_title":"Machine Learning Approaches","hours":1.0588,"done_already":false},{"code":"A4.4.1","text":"Ethical implications of machine learning in real-world scenarios","detail":"Accountability, fairness, bias, consent, privacy, transparency","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.4","subtopic_title":"Ethical Considerations","hours":1.0588,"done_already":false},{"code":"A4.4.2","text":"Ethics of increasing integration of computer technologies into daily life","detail":"Quantum computing, AR/VR, pervasive AI \u2014 society, rights, equity","level":"hl","topic_code":"A4","topic_title":"Machine Learning","theme":"A","subtopic_code":"A4.4","subtopic_title":"Ethical Considerations","hours":1.0588,"done_already":false},{"code":"B1.1.1","text":"Construct a problem specification","detail":"Constraints, objectives, input/output specs, evaluation criteria","level":"core","topic_code":"B1","topic_title":"Computational Thinking","theme":"B","subtopic_code":"B1.1","subtopic_title":"Approaches to Computational Thinking","hours":1.25,"done_already":false},{"code":"B1.1.2","text":"Fundamental concepts of computational thinking","detail":"Abstraction, algorithmic design, decomposition, pattern recognition","level":"core","topic_code":"B1","topic_title":"Computational Thinking","theme":"B","subtopic_code":"B1.1","subtopic_title":"Approaches to Computational Thinking","hours":1.25,"done_already":false},{"code":"B1.1.3","text":"Applying computational thinking to solve problems","detail":"Software dev, data analysis, ML, database design, network security","level":"core","topic_code":"B1","topic_title":"Computational Thinking","theme":"B","subtopic_code":"B1.1","subtopic_title":"Approaches to Computational Thinking","hours":1.25,"done_already":false},{"code":"B1.1.4","text":"Trace flowcharts for programming algorithms","detail":"Standard symbols: process, decision, flowline, input/output, start/end","level":"core","topic_code":"B1","topic_title":"Computational Thinking","theme":"B","subtopic_code":"B1.1","subtopic_title":"Approaches to Computational Thinking","hours":1.25,"done_already":false},{"code":"B2.1.1","text":"Construct/trace programs using global and local variables","detail":"Boolean, char, decimal, integer, string data types","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.1","subtopic_title":"Programming Fundamentals","hours":2.3333,"done_already":false},{"code":"B2.1.2","text":"Construct programs that extract and manipulate substrings","detail":"Extraction, alteration, concatenation, replacement","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.1","subtopic_title":"Programming Fundamentals","hours":2.3333,"done_already":false},{"code":"B2.1.3","text":"Common exception handling techniques","detail":"try/catch (Java), try/except (Python), finally","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.1","subtopic_title":"Programming Fundamentals","hours":2.3333,"done_already":false},{"code":"B2.1.4","text":"Common debugging techniques","detail":"Trace tables, breakpoints, print statements, step execution","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.1","subtopic_title":"Programming Fundamentals","hours":2.3333,"done_already":false},{"code":"B2.2.1","text":"Compare static and dynamic data structures","detail":"Memory allocation, resizing, speed vs flexibility trade-offs","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.2","subtopic_title":"Data Structures","hours":2.3333,"done_already":false},{"code":"B2.2.2","text":"Construct programs that apply arrays and Lists","detail":"1D/2D arrays, ArrayLists/Lists; add, remove, traverse","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.2","subtopic_title":"Data Structures","hours":2.3333,"done_already":false},{"code":"B2.2.3","text":"Concept of a stack (LIFO)","detail":"push, pop, peek, isEmpty","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.2","subtopic_title":"Data Structures","hours":2.3333,"done_already":false},{"code":"B2.2.4","text":"Concept of a queue (FIFO)","detail":"enqueue, dequeue, front, isEmpty","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.2","subtopic_title":"Data Structures","hours":2.3333,"done_already":false},{"code":"B2.3.1","text":"Correct sequencing of code instructions","detail":"Avoiding infinite loops, deadlock, incorrect output","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.3","subtopic_title":"Programming Constructs","hours":2.3333,"done_already":false},{"code":"B2.3.2","text":"Programs using selection structures","detail":"if / else / else-if / elif; Boolean and relational operators","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.3","subtopic_title":"Programming Constructs","hours":2.3333,"done_already":false},{"code":"B2.3.3","text":"Programs using looping structures","detail":"Counted and conditional loops","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.3","subtopic_title":"Programming Constructs","hours":2.3333,"done_already":false},{"code":"B2.3.4","text":"Construct functions and modularization","detail":"Reusable code blocks; local vs global scope","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.3","subtopic_title":"Programming Constructs","hours":2.3333,"done_already":false},{"code":"B2.4.1","text":"Algorithm efficiency via Big O notation","detail":"Time and space complexity analysis","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.4","subtopic_title":"Programming Algorithms","hours":2.3333,"done_already":false},{"code":"B2.4.2","text":"Construct/trace linear and binary search","detail":"Sorted vs unsorted data considerations","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.4","subtopic_title":"Programming Algorithms","hours":2.3333,"done_already":false},{"code":"B2.4.3","text":"Construct/trace bubble sort and selection sort","detail":"Time/space complexity comparison","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.4","subtopic_title":"Programming Algorithms","hours":2.3333,"done_already":false},{"code":"B2.4.4","text":"Recursion and its applications","detail":"Fractals, tree traversal, sorting (e.g. quicksort)","level":"hl","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.4","subtopic_title":"Programming Algorithms","hours":2.3333,"done_already":false},{"code":"B2.4.5","text":"Construct/trace recursive algorithms","detail":"Simple, non-branching recursive algorithms","level":"hl","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.4","subtopic_title":"Programming Algorithms","hours":2.3333,"done_already":false},{"code":"B2.5.1","text":"Construct code to perform file-processing operations","detail":"Read, write, append; Scanner/FileWriter (Java), open()/read()/write() (Python)","level":"core","topic_code":"B2","topic_title":"Programming","theme":"B","subtopic_code":"B2.5","subtopic_title":"File Processing","hours":2.3333,"done_already":false},{"code":"B3.1.1","text":"Evaluate the fundamentals of OOP","detail":"Objects, classes, instances","level":"core","topic_code":"B3","topic_title":"Object-Oriented Programming","theme":"B","subtopic_code":"B3.1","subtopic_title":"OOP for a Single Class","hours":2.3,"done_already":false},{"code":"B3.1.2","text":"Design classes, their methods and behaviour","detail":"Class structure and responsibilities","level":"core","topic_code":"B3","topic_title":"Object-Oriented Programming","theme":"B","subtopic_code":"B3.1","subtopic_title":"OOP for a Single Class","hours":2.3,"done_already":false},{"code":"B3.1.3","text":"Distinguish static and non-static variables and methods","detail":"Class-level vs instance-level","level":"core","topic_code":"B3","topic_title":"Object-Oriented Programming","theme":"B","subtopic_code":"B3.1","subtopic_title":"OOP for a Single Class","hours":2.3,"done_already":false},{"code":"B3.1.4","text":"Construct code to define classes and instantiate objects","detail":"Constructors, instantiation, method calls","level":"core","topic_code":"B3","topic_title":"Object-Oriented Programming","theme":"B","subtopic_code":"B3.1","subtopic_title":"OOP for a Single Class","hours":2.3,"done_already":false},{"code":"B3.1.5","text":"Encapsulation and information hiding","detail":"Access modifiers; getters and setters","level":"core","topic_code":"B3","topic_title":"Object-Oriented Programming","theme":"B","subtopic_code":"B3.1","subtopic_title":"OOP for a Single Class","hours":2.3,"done_already":false},{"code":"B3.2.1","text":"Inheritance to promote code reusability","detail":"Superclass/subclass relationships","level":"hl","topic_code":"B3","topic_title":"Object-Oriented Programming","theme":"B","subtopic_code":"B3.2","subtopic_title":"OOP for Multiple Classes","hours":2.3,"done_already":false},{"code":"B3.2.2","text":"Model polymorphism","detail":"Method overriding and related forms","level":"hl","topic_code":"B3","topic_title":"Object-Oriented Programming","theme":"B","subtopic_code":"B3.2","subtopic_title":"OOP for Multiple Classes","hours":2.3,"done_already":false},{"code":"B3.2.3","text":"Concept of abstraction in OOP","detail":"Abstract classes and interfaces","level":"hl","topic_code":"B3","topic_title":"Object-Oriented Programming","theme":"B","subtopic_code":"B3.2","subtopic_title":"OOP for Multiple Classes","hours":2.3,"done_already":false},{"code":"B3.2.4","text":"Role of composition and aggregation","detail":"Class relationships beyond inheritance","level":"hl","topic_code":"B3","topic_title":"Object-Oriented Programming","theme":"B","subtopic_code":"B3.2","subtopic_title":"OOP for Multiple Classes","hours":2.3,"done_already":false},{"code":"B3.2.5","text":"Commonly used design patterns in OOP","detail":"Recurring solutions to class-design problems","level":"hl","topic_code":"B3","topic_title":"Object-Oriented Programming","theme":"B","subtopic_code":"B3.2","subtopic_title":"OOP for Multiple Classes","hours":2.3,"done_already":false},{"code":"B4.1.1","text":"Properties and purpose of ADTs in programming","detail":"High-level description of data structure and operations","level":"hl","topic_code":"B4","topic_title":"Abstract Data Types","theme":"B","subtopic_code":"B4.1","subtopic_title":"Fundamentals of ADTs","hours":3.8333,"done_already":false},{"code":"B4.1.2","text":"Evaluate linked lists","detail":"Singly, doubly, circular; comparison with arrays","level":"hl","topic_code":"B4","topic_title":"Abstract Data Types","theme":"B","subtopic_code":"B4.1","subtopic_title":"Fundamentals of ADTs","hours":3.8333,"done_already":false},{"code":"B4.1.3","text":"Construct and apply linked lists","detail":"Insertion, deletion, traversal, search","level":"hl","topic_code":"B4","topic_title":"Abstract Data Types","theme":"B","subtopic_code":"B4.1","subtopic_title":"Fundamentals of ADTs","hours":3.8333,"done_already":false},{"code":"B4.1.4","text":"Structures and properties of BSTs","detail":"Insert, delete, traverse, search; tree diagrams","level":"hl","topic_code":"B4","topic_title":"Abstract Data Types","theme":"B","subtopic_code":"B4.1","subtopic_title":"Fundamentals of ADTs","hours":3.8333,"done_already":false},{"code":"B4.1.5","text":"Construct and apply sets as an ADT","detail":"Union, intersection, difference; membership testing","level":"hl","topic_code":"B4","topic_title":"Abstract Data Types","theme":"B","subtopic_code":"B4.1","subtopic_title":"Fundamentals of ADTs","hours":3.8333,"done_already":false},{"code":"B4.1.6","text":"Core principles of ADTs \u2014 hash-based structures","detail":"Hashing, collision resolution; HashMap/HashSet, dict/set","level":"hl","topic_code":"B4","topic_title":"Abstract Data Types","theme":"B","subtopic_code":"B4.1","subtopic_title":"Fundamentals of ADTs","hours":3.8333,"done_already":false}];
+
+const CATALOG_BY_CODE = {};
+CATALOG.forEach(it => CATALOG_BY_CODE[it.code] = it);
+
+const PERIOD_TIMES = {P1:'08:55-09:55', P2:'10:25-11:25', P3:'11:30-12:30', P4:'13:30-14:30', P5:'14:30-15:30'};
+const TODAY_ISO = new Date().toISOString().slice(0,10);
+
+function parseISO(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+function fmtDate(d){ return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}); }
+function monthKey(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function themeOf(code){ if(!code) return 'a'; return code.startsWith('B') ? 'b' : 'a'; }
+
+/* ---------- Small inline icons (link fields) ---------- */
+const ICON_SLIDES = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1.6"/><path d="M8 20h8M12 16v4"/><path d="M10 8.3v3.4l3-1.7-3-1.7Z" fill="currentColor" stroke="none"/></svg>';
+const ICON_TICKET = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 3v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-3Z"/><path d="M9.5 6.5v11" stroke-dasharray="2.2 2.2"/></svg>';
+const ICON_SAVE = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M16.5 21v-7h-9v7M7.5 3v5h7"/></svg>';
+const ICON_OPEN = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13.2V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5.8"/><path d="M14.5 3H21v6.5"/><path d="M10.3 13.7 21 3"/></svg>';
+const ICON_PENCIL = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+const ICON_PLUS = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
+const ICON_CLOSE = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+
+/*
+ * ---------- Live schedule reflow ----------
+ * LESSONS is the stored record. computeDisplaySchedule() computes what's
+ * actually shown: anything before today, or already ticked complete
+ * (wherever its date is), is frozen exactly as stored. From today onward,
+ * anything not yet complete is re-queued in its original order across the
+ * still-open content/review dates - so a lesson that never got ticked off
+ * reappears at the next slot instead of being skipped, and everything after
+ * it shifts out by one. Assessment and IA sessions are never moved.
+ */
+function buildCodeIndex(){
+  const idx = {};
+  LESSONS.forEach(l => { if(l.type === 'content') (l.items||[]).forEach(it => { idx[it.code] = l; }); });
+  return idx;
+}
+
+function computeDisplaySchedule(){
+  const codeIdx = buildCodeIndex();
+  const orderedKeys = LESSONS.filter(l => l.type === 'content').map(l => l.items[0].code);
+  const pending = orderedKeys.filter(code => !codeIdx[code].completed);
+
+  const isFrozen = l => l.date < TODAY_ISO || (l.type === 'content' && l.completed);
+  const eligible = LESSONS.filter(l => (l.type === 'content' || l.type === 'buffer') && !isFrozen(l));
+  const eligibleContentCount = eligible.filter(l => l.type === 'content').length;
+  const overflow = Math.max(0, pending.length - eligibleContentCount);
+
+  let pi = 0, bufferConsumed = 0, pushedCount = 0;
+  const display = LESSONS.map(l => {
+    if(l.type === 'ia' || l.type === 'assessment') return l;
+    if(isFrozen(l)) return l;
+    const isContentSlot = l.type === 'content';
+    const canUseBuffer = !isContentSlot && bufferConsumed < overflow;
+    if((isContentSlot || canUseBuffer) && pi < pending.length){
+      if(!isContentSlot) bufferConsumed++;
+      const code = pending[pi++];
+      const src = codeIdx[code];
+      if(src.date !== l.date) pushedCount++;
+      return { date:l.date, day:l.day, period:l.period, time:l.time, type:'content', items: src.items, completed:false };
+    }
+    return {date:l.date, day:l.day, period:l.period, time:l.time, type:'buffer', items:[], completed:false};
+  });
+  display._pushedCount = pushedCount;
+  return display;
+}
+
+function lessonsByDate(schedule){
+  const m = {};
+  schedule.forEach(l => { (m[l.date] = m[l.date] || []).push(l); });
+  return m;
+}
+function monthList(schedule){
+  const set = new Set();
+  schedule.forEach(l => set.add(monthKey(parseISO(l.date))));
+  return Array.from(set).sort();
+}
+
+let MONTHS = monthList(LESSONS);
+let monthIdx = 0;
+let selected = null; // {kind:'content'|'ia'|'assessment', key}
+let saveTimer = null;
+
+function renderStats(display){
+  const trackable = LESSONS.filter(l => l.type === 'content' || l.type === 'ia' || l.type === 'assessment');
+  const done = trackable.filter(l => l.completed).length;
+  const pct = trackable.length ? Math.round(done/trackable.length*100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = done + '/' + trackable.length;
+
+  const content = LESSONS.filter(l=>l.type==='content').length;
+  const ia = LESSONS.filter(l=>l.type==='ia').length;
+  const assess = LESSONS.filter(l=>l.type==='assessment').length;
+  const pushed = display._pushedCount || 0;
+  const mini = [[content,'Content'],[assess,'Assess.'],[ia,'IA'],[pushed,'Pushed fwd']];
+  document.getElementById('statsMini').innerHTML = mini.map(([n,l]) => `<div class="mi"><b>${n}</b>${l}</div>`).join('');
+}
+
+function keyOf(lesson){
+  if(lesson.type === 'content') return lesson.items[0] ? lesson.items[0].code : null;
+  if(lesson.type === 'ia' || lesson.type === 'assessment') return lesson.date;
+  return null;
+}
+
+function isSelected(lesson){
+  if(!selected) return false;
+  if(lesson.type === 'content') return selected.kind === 'content' && lesson.items.some(i => i.code === selected.key);
+  return selected.kind === lesson.type && selected.key === lesson.date;
+}
+
+function chipHtml(lesson, item){
+  const done = lesson.completed;
+  let cls = 'chip type-' + lesson.type + (done ? ' done' : '');
+  let label = '';
+  let hasLink = false;
+  let key;
+  if(lesson.type === 'content'){
+    key = item.code;
+    cls += ' theme-' + themeOf(item.code);
+    label = item.code;
+    hasLink = !!(item.slidesUrl || item.exitTicketUrl);
+  } else if(lesson.type === 'ia'){
+    key = lesson.date;
+    label = 'IA';
+    hasLink = !!(lesson.slidesUrl || lesson.exitTicketUrl);
+  } else if(lesson.type === 'assessment'){
+    key = lesson.date;
+    label = 'Assess.';
+    hasLink = !!(lesson.slidesUrl || lesson.exitTicketUrl);
+  } else {
+    key = '';
+    label = 'Review';
+  }
+  const sel = isSelected(lesson) ? ' selected' : '';
+  const clickable = lesson.type !== 'buffer';
+  return `<div class="${cls}${sel}" data-kind="${lesson.type}" data-key="${key||''}">
+    ${clickable ? `<span class="cb" data-action="toggle" data-kind="${lesson.type}" data-key="${key}"></span>` : ''}
+    <span class="txt">${label}</span>
+    ${hasLink ? '<span class="link-dot"></span>' : ''}
+  </div>`;
+}
+
+function chipsForLesson(lesson){
+  if(lesson.type === 'content') return lesson.items.map(it => chipHtml(lesson, it));
+  return [chipHtml(lesson, null)];
+}
+
+function renderMonth(){
+  const display = computeDisplaySchedule();
+  renderStats(display);
+
+  const [y,m] = MONTHS[monthIdx].split('-').map(Number);
+  const label = new Date(y, m-1, 1).toLocaleDateString('en-GB', {month:'long', year:'numeric'});
+  document.getElementById('monthLabel').textContent = label;
+  document.getElementById('prevBtn').disabled = monthIdx === 0;
+  document.getElementById('nextBtn').disabled = monthIdx === MONTHS.length - 1;
+
+  const byDate = lessonsByDate(display);
+  const grid = document.getElementById('calGrid');
+  const firstOfMonth = new Date(y, m-1, 1);
+  const startWeekday = (firstOfMonth.getDay() + 6) % 7;
+  const daysInMonth = new Date(y, m, 0).getDate();
+
+  let html = '';
+  for(let i=0;i<startWeekday;i++) html += `<div class="cal-cell empty"></div>`;
+  for(let day=1; day<=daysInMonth; day++){
+    const iso = `${y}-${String(m).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dow = new Date(y,m-1,day).getDay();
+    const isWeekend = (dow === 0 || dow === 6) ? ' weekend' : '';
+    const ls = byDate[iso];
+    const isToday = iso === TODAY_ISO ? ' is-today' : '';
+    const dayLesson = ls ? ls.find(l => l.type !== 'buffer') : null;
+    const dayCls = dayLesson ? ' has-day' : '';
+    html += `<div class="cal-cell${isToday}${isWeekend}${dayCls}" data-date="${iso}">
+      <span class="datenum">${day}</span>
+      ${ls ? ls.flatMap(chipsForLesson).join('') : ''}
+    </div>`;
+  }
+  grid.innerHTML = html;
+
+  grid.querySelectorAll('.chip').forEach(chip => {
+    if(chip.getAttribute('data-kind') === 'buffer') return;
+    chip.addEventListener('click', e => {
+      e.stopPropagation();
+      const kind = chip.getAttribute('data-kind');
+      const key = chip.getAttribute('data-key');
+      if(e.target.getAttribute('data-action') === 'toggle'){
+        toggleComplete(kind, key);
+      } else {
+        selectItem(kind, key);
+      }
+    });
+  });
+
+  grid.querySelectorAll('.cal-cell.has-day').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const iso = cell.getAttribute('data-date');
+      const lesson = (byDate[iso] || []).find(l => l.type !== 'buffer');
+      if(!lesson) return;
+      selectItem(lesson.type, keyOf(lesson));
+    });
+  });
+}
+
+function renderCalHead(){
+  const dows = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  document.getElementById('calGridHead').innerHTML = dows.map(d => `<div class="dow">${d}</div>`).join('');
+}
+
+/* ---------- Sidebar detail ---------- */
+function resolveLesson(kind, key){
+  if(kind === 'ia' || kind === 'assessment') return LESSONS.find(l => l.type === kind && l.date === key);
+  if(kind === 'content') return buildCodeIndex()[key];
+  return null;
+}
+
+function toggleComplete(kind, key){
+  const lesson = resolveLesson(kind, key);
+  if(!lesson) return;
+  lesson.completed = !lesson.completed;
+  renderMonth(); renderAgenda(document.getElementById('searchBox').value);
+  if(selected && isSelected(lesson)) renderEventCard(selected.kind, selected.key);
+  scheduleSave();
+}
+
+function saveContentItemLink(code, itemCode, field, value){
+  const lesson = buildCodeIndex()[code];
+  if(!lesson) return;
+  const item = lesson.items.find(i => i.code === itemCode);
+  if(!item) return;
+  item[field] = value.trim();
+  renderMonth(); renderAgenda(document.getElementById('searchBox').value);
+  scheduleSave();
+  showToast('Saved');
+}
+
+function saveLessonLink(kind, key, field, value){
+  const lesson = resolveLesson(kind, key);
+  if(!lesson) return;
+  lesson[field] = value.trim();
+  renderMonth(); renderAgenda(document.getElementById('searchBox').value);
+  scheduleSave();
+  showToast('Saved');
+}
+
+function fileFieldHtml(icon, label, field, url, saveAttrs){
+  const has = !!url;
+  const tag = has ? 'a' : 'span';
+  const openAttrs = has ? `href="${escapeHtml(url)}" target="_blank" rel="noopener"` : '';
+  return `
+    <div class="filefield">
+      <div class="filerow">
+        <${tag} class="filebtn ${has ? 'has-link' : 'empty'}" ${openAttrs} title="${has ? 'Open ' + label : label + ' not added yet'}">
+          <span class="ico">${icon}</span><span class="lbl">${label}</span>
+        </${tag}>
+        <button class="editbtn" data-action="toggle-edit" title="${has ? 'Change' : 'Add'} ${label} link" aria-label="${has ? 'Change' : 'Add'} ${label} link">${has ? ICON_PENCIL : ICON_PLUS}</button>
+      </div>
+      <div class="link-editor" hidden>
+        <input type="text" data-field="${field}" placeholder="Paste ${label} link&hellip;" value="${escapeHtml(url || '')}">
+        <button class="iconbtn2 save" ${saveAttrs} data-field="${field}" title="Save" aria-label="Save ${label} link">${ICON_SAVE}</button>
+        <button class="iconbtn2 cancel" data-action="cancel-edit" title="Cancel" aria-label="Cancel">${ICON_CLOSE}</button>
+      </div>
+    </div>`;
+}
+
+function itemLinkFieldsHtml(code, item){
+  const rows = [['slidesUrl','Slides', ICON_SLIDES], ['exitTicketUrl','Exit ticket', ICON_TICKET]];
+  return rows.map(([field, label, icon]) =>
+    fileFieldHtml(icon, label, field, item[field], `data-itemcode="${item.code}" data-savefield="${field}"`)
+  ).join('');
+}
+
+function lessonLinkFieldsHtml(kind, key, lesson, labels){
+  const rows = [['slidesUrl', labels[0], ICON_SLIDES], ['exitTicketUrl', labels[1], ICON_TICKET]];
+  return rows.map(([field, label, icon]) =>
+    fileFieldHtml(icon, label, field, lesson[field], `data-lessonfield="${field}"`)
+  ).join('');
+}
+
+function renderEventCard(kind, key){
+  const display = computeDisplaySchedule();
+  const lesson = kind === 'content'
+    ? display.find(l => l.type === 'content' && l.items.some(i => i.code === key))
+    : display.find(l => l.type === kind && l.date === key);
+  if(!lesson) return;
+
+  document.getElementById('detailEmpty').style.display = 'none';
+  const body = document.getElementById('detailBody');
+  body.style.display = 'block';
+  const d = parseISO(lesson.date);
+  const dateStr = fmtDate(d) + ' &middot; ' + lesson.day + ' &middot; ' + lesson.period + ' (' + lesson.time + ')';
+
+  if(lesson.type === 'content'){
+    document.getElementById('detailHead').textContent = lesson.items.length > 1 ? 'Lesson (' + lesson.items.length + ' topics)' : 'Lesson';
+    let itemsHtml = lesson.items.map((it, idx) => {
+      const full = CATALOG_BY_CODE[it.code] || {};
+      const th = themeOf(it.code);
+      return `<div class="item-block">
+        <div class="code" style="color:var(--theme-${th})">${it.code}</div>
+        <h3>${it.text}</h3>
+        <p class="meta">${full.subtopic_title||''}</p>
+        <p class="detail-text">${full.detail||''}</p>
+        <div class="badges">${it.level==='hl' ? '<span class="badge hl">HL only</span>' : '<span class="badge">Core</span>'}</div>
+        ${itemLinkFieldsHtml(key, it)}
+      </div>`;
+    }).join('');
+    body.innerHTML = `
+      <p class="meta" style="margin-bottom:10px;">${dateStr}</p>
+      <div class="complete-row" id="completeRow">
+        <div class="big-check ${lesson.completed?'done':''}" id="bigCheck"></div>
+        <span id="completeLabel">${lesson.completed ? 'Marked complete' : 'Mark lesson complete'}</span>
+      </div>
+      ${itemsHtml}
+    `;
+  } else if(lesson.type === 'assessment'){
+    document.getElementById('detailHead').textContent = 'Assessment';
+    const list = (lesson.assessedCodes||[]).map(code => {
+      const full = CATALOG_BY_CODE[code] || {};
+      return `<li><span class="mono">${code}</span> ${full.text||''}</li>`;
+    }).join('');
+    body.innerHTML = `
+      <div class="code" style="color:var(--assessment)">Assessment</div>
+      <h3>Content check</h3>
+      <p class="meta">${dateStr}</p>
+      <p class="detail-text">Covers everything taught since the last assessment:</p>
+      <ul class="assessed-list">${list || '<li>No new content since the last assessment</li>'}</ul>
+      <div class="badges"><span class="badge assessment">Assessment</span></div>
+      <div class="complete-row" id="completeRow">
+        <div class="big-check ${lesson.completed?'done':''}" id="bigCheck"></div>
+        <span id="completeLabel">${lesson.completed ? 'Marked complete' : 'Mark assessment complete'}</span>
+      </div>
+      ${lessonLinkFieldsHtml('assessment', key, lesson, ['Assessment','Mark scheme'])}
+    `;
+  } else {
+    document.getElementById('detailHead').textContent = 'Internal Assessment';
+    body.innerHTML = `
+      <div class="code" style="color:var(--ia)">Internal Assessment</div>
+      <h3>IA introduction &amp; work session</h3>
+      <p class="meta">${dateStr}</p>
+      <p class="detail-text">Early introduction to "The Computational Solution" &ndash; requirements briefing, topic selection, tool/tech scoping, and initial planning ahead of the IA proper in DP2.</p>
+      <div class="badges"><span class="badge ia">IA</span></div>
+      <div class="complete-row" id="completeRow">
+        <div class="big-check ${lesson.completed?'done':''}" id="bigCheck"></div>
+        <span id="completeLabel">${lesson.completed ? 'Marked complete' : 'Mark lesson complete'}</span>
+      </div>
+      ${lessonLinkFieldsHtml('ia', key, lesson, ['Slides','Exit ticket'])}
+    `;
+  }
+
+  document.getElementById('completeRow').addEventListener('click', () => toggleComplete(kind, key));
+  body.querySelectorAll('[data-action="toggle-edit"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const field = btn.closest('.filefield').querySelector('.link-editor');
+      field.hidden = !field.hidden;
+      if(!field.hidden) field.querySelector('input').focus();
+    });
+  });
+  body.querySelectorAll('[data-action="cancel-edit"]').forEach(btn => {
+    btn.addEventListener('click', () => { btn.closest('.link-editor').hidden = true; });
+  });
+  body.querySelectorAll('[data-savefield]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const row = btn.closest('.filefield');
+      const input = row.querySelector('input');
+      saveContentItemLink(key, btn.getAttribute('data-itemcode'), btn.getAttribute('data-savefield'), input.value);
+      renderEventCard(kind, key);
+    });
+  });
+  body.querySelectorAll('[data-lessonfield]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const row = btn.closest('.filefield');
+      const input = row.querySelector('input');
+      saveLessonLink(kind, key, btn.getAttribute('data-lessonfield'), input.value);
+      renderEventCard(kind, key);
+    });
+  });
+  body.querySelectorAll('.link-editor input').forEach(inp => {
+    inp.addEventListener('keydown', e => { if(e.key === 'Enter') inp.closest('.link-editor').querySelector('.save').click(); });
+  });
+}
+
+function selectItem(kind, key){
+  if(kind === 'buffer' || !key) return;
+  selected = {kind, key};
+  renderMonth();
+  renderEventCard(kind, key);
+}
+
+/* ---------- Agenda ---------- */
+function renderAgenda(filter){
+  const display = computeDisplaySchedule();
+  const body = document.getElementById('agendaBody');
+  const f = (filter || '').trim().toLowerCase();
+  let rows = display.map(l => {
+    const d = parseISO(l.date);
+    const code = l.type === 'content' ? l.items.map(i=>i.code).join(' + ') : (l.type === 'ia' ? 'IA' : l.type === 'assessment' ? 'Test' : '—');
+    const focus = l.type === 'content' ? l.items.map(i=>i.text).join(' + ')
+                : l.type === 'ia' ? 'IA introduction & work session'
+                : l.type === 'assessment' ? 'Assessment'
+                : 'Review / catch-up';
+    const searchable = (l.date + ' ' + l.day + ' ' + code + ' ' + focus).toLowerCase();
+    return {l, d, code, focus, searchable, key: keyOf(l)};
+  });
+  if(f) rows = rows.filter(r => r.searchable.includes(f));
+  body.innerHTML = rows.map(r => {
+    const hasLink = r.l.type === 'content' ? r.l.items.some(i=>i.slidesUrl||i.exitTicketUrl) : (r.l.slidesUrl || r.l.exitTicketUrl);
+    let links = '';
+    if(r.l.type === 'content'){
+      links = r.l.items.filter(i=>i.slidesUrl||i.exitTicketUrl).map(i => `${i.code}: ${i.slidesUrl?`<a href="${escapeHtml(i.slidesUrl)}" target="_blank" rel="noopener">Slides</a>`:''}${i.exitTicketUrl?` <a href="${escapeHtml(i.exitTicketUrl)}" target="_blank" rel="noopener">Exit</a>`:''}`).join('; ');
+    } else if(hasLink){
+      links = [r.l.slidesUrl?`<a href="${escapeHtml(r.l.slidesUrl)}" target="_blank" rel="noopener">Link 1</a>`:'', r.l.exitTicketUrl?`<a href="${escapeHtml(r.l.exitTicketUrl)}" target="_blank" rel="noopener">Link 2</a>`:''].filter(Boolean).join(' &middot; ');
+    }
+    const clickable = r.l.type !== 'buffer';
+    return `
+    <tr class="type-${r.l.type}${r.l.completed ? ' done' : ''}" data-kind="${r.l.type}" data-key="${r.key||''}" data-date="${r.l.date}">
+      <td class="check-td">${clickable ? `<span class="mini-check${r.l.completed?' done':''}" data-action="toggle" data-kind="${r.l.type}" data-key="${r.key}"></span>` : ''}</td>
+      <td class="code">${fmtDate(r.d)}</td>
+      <td>${r.l.day}</td>
+      <td class="code">${r.l.period}</td>
+      <td class="code">${r.code}</td>
+      <td class="focuscell">${r.focus}</td>
+      <td style="font-size:11.5px;">${links || '<span style=\"color:var(--ink-3)\">—</span>'}</td>
+    </tr>`;
+  }).join('');
+
+  body.querySelectorAll('.mini-check').forEach(el => {
+    el.addEventListener('click', e => { e.stopPropagation(); toggleComplete(el.getAttribute('data-kind'), el.getAttribute('data-key')); });
+  });
+  body.querySelectorAll('tr').forEach(tr => {
+    const kind = tr.getAttribute('data-kind');
+    if(kind === 'buffer') return;
+    tr.addEventListener('click', () => {
+      const key = tr.getAttribute('data-key'), iso = tr.getAttribute('data-date');
+      goToMonthOf(iso); selectItem(kind, key);
+      document.getElementById('detailCard').scrollIntoView({behavior:'smooth', block:'center'});
+    });
+  });
+}
+
+function goToMonthOf(iso){
+  const mk = monthKey(parseISO(iso));
+  const idx = MONTHS.indexOf(mk);
+  if(idx >= 0){ monthIdx = idx; renderMonth(); }
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => { if(monthIdx>0){ monthIdx--; renderMonth(); }});
+document.getElementById('nextBtn').addEventListener('click', () => { if(monthIdx<MONTHS.length-1){ monthIdx++; renderMonth(); }});
+document.getElementById('todayBtn').addEventListener('click', () => { goToMonthOf(LESSONS.some(l => l.date === TODAY_ISO) ? TODAY_ISO : LESSONS[0].date); });
+document.getElementById('searchBox').addEventListener('input', e => renderAgenda(e.target.value));
+
+/* ---------- Collapsible lower sections ---------- */
+document.querySelectorAll('.section-toggle').forEach(t => {
+  t.addEventListener('click', () => {
+    const target = document.getElementById(t.getAttribute('data-target'));
+    const open = target.classList.toggle('open');
+    t.classList.toggle('open', open);
+  });
+});
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ---------- Persistence ---------- */
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveState, 900);
+}
+async function saveState(){
+  let artifact;
+  try{ artifact = await claude.use('artifact'); }catch(e){ artifact = null; }
+  if(!artifact) return;
+  let src = '<!doctype html>\n' + document.documentElement.outerHTML;
+  const replaced = src.replace(/let LESSONS = \[[\s\S]*?\];\nconst CATALOG/, 'let LESSONS = ' + JSON.stringify(LESSONS) + ';\nconst CATALOG');
+  if(replaced === src){ return; }
+  try{
+    await artifact.publish(replaced);
+  }catch(err){
+    if(err && err.code === 'conflict'){
+      showToast('This page changed elsewhere — reload to see the latest before editing again.');
+    }
+  }
+}
+
+/* ---------- Export ---------- */
+function toCSV(){
+  const header = ['Date','Day','Period','Time','Type','Codes','Focus','Notes','Completed','SlidesUrls','ExitTicketUrls'];
+  const rows = [header.join(',')];
+  computeDisplaySchedule().forEach(l => {
+    let codes='', focus='', slides='', exit='';
+    if(l.type === 'content'){
+      codes = l.items.map(i=>i.code).join(' | ');
+      focus = l.items.map(i=>i.code+' '+i.text).join(' | ');
+      slides = l.items.map(i=>i.slidesUrl||'').join(' | ');
+      exit = l.items.map(i=>i.exitTicketUrl||'').join(' | ');
+    } else if(l.type === 'ia'){
+      focus = 'Internal Assessment introduction & work session'; slides=l.slidesUrl||''; exit=l.exitTicketUrl||'';
+    } else if(l.type === 'assessment'){
+      codes = (l.assessedCodes||[]).join(' | ');
+      focus = 'Assessment covering: ' + (l.assessedCodes||[]).join(', '); slides=l.slidesUrl||''; exit=l.exitTicketUrl||'';
+    } else {
+      focus = 'Review / catch-up';
+    }
+    const notes = l.type === 'ia' ? 'IA work session' : l.type === 'assessment' ? 'Assessment' : l.type === 'buffer' ? 'No new content scheduled' : '';
+    const cells = [l.date, l.day, l.period, l.time, l.type, codes, focus, notes, l.completed?'TRUE':'FALSE', slides, exit].map(c => {
+      c = String(c).replace(/"/g,'""');
+      return /[",\n]/.test(c) ? `"${c}"` : c;
+    });
+    rows.push(cells.join(','));
+  });
+  return rows.join('\n');
+}
+async function exportCSV(){
+  const csv = toCSV();
+  const filename = 'dp1-hl-cs-calendar.csv';
+  try{
+    const downloads = await claude.use('downloads');
+    if(downloads){
+      await downloads.save({filename, data: new Blob([csv], {type:'text/csv'})});
+      showToast('Calendar exported as ' + filename);
+      return;
+    }
+  }catch(err){
+    if(err && err.code === 'declined'){ return; }
+  }
+  try{
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Calendar exported as ' + filename);
+  }catch(err){
+    showToast('Could not export - try again');
+  }
+}
+document.getElementById('exportBtn').addEventListener('click', exportCSV);
+
+/* ---------- Import ---------- */
+document.getElementById('unlockBtn').addEventListener('click', () => {
+  document.getElementById('passwordRow').classList.add('show');
+  document.getElementById('pwInput').focus();
+});
+document.getElementById('pwSubmit').addEventListener('click', checkPassword);
+document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key === 'Enter') checkPassword(); });
+function checkPassword(){
+  const val = document.getElementById('pwInput').value;
+  if(val === IMPORT_PASSWORD){
+    document.getElementById('passwordRow').classList.remove('show');
+    document.getElementById('importArea').classList.add('show');
+    document.getElementById('pwError').textContent = '';
+    document.getElementById('lockedNote').textContent = 'Unlocked for this session.';
+  } else {
+    document.getElementById('pwError').textContent = 'Wrong password.';
+  }
+}
+
+function truthy(v){ return /^(true|yes|1|y)$/i.test(String(v||'').trim()); }
+
+function rowsToLessons(rows){
+  const out = [];
+  rows.forEach(row => {
+    const rawDate = row.Date || row.date;
+    if(!rawDate) return;
+    let iso;
+    const s = String(rawDate).trim();
+    if(/^\d{4}-\d{2}-\d{2}/.test(s)) iso = s.slice(0,10);
+    else if(/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)){
+      const [d,m,y] = s.split('/').map(Number);
+      iso = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    } else {
+      const d = new Date(s);
+      if(isNaN(d)) return;
+      iso = d.toISOString().slice(0,10);
+    }
+    const d = parseISO(iso);
+    const day = d.toLocaleDateString('en-GB', {weekday:'long'});
+    const period = (row.Period || row.period || 'P1').toString().trim();
+    const time = row.Time || row.time || PERIOD_TIMES[period] || '';
+    let type = (row.Type || '').toLowerCase().trim();
+    const codes = String(row.Codes || row.Code || '').split('|').map(c=>c.trim()).filter(Boolean);
+    if(!type) type = codes.length ? 'content' : 'buffer';
+    let items = [], slidesUrl = '', exitTicketUrl = '';
+    if(type === 'content'){
+      const slidesList = String(row.SlidesUrls||'').split('|').map(s=>s.trim());
+      const exitList = String(row.ExitTicketUrls||'').split('|').map(s=>s.trim());
+      items = codes.map((code,i) => {
+        const cat = CATALOG_BY_CODE[code];
+        return {code, text: cat?cat.text:'', level: cat?cat.level:'core', topic: code.split('.')[0],
+          slidesUrl: slidesList[i]||'', exitTicketUrl: exitList[i]||''};
+      });
+    } else if(type === 'ia' || type === 'assessment'){
+      slidesUrl = String(row.SlidesUrls||'').split('|')[0] || '';
+      exitTicketUrl = String(row.ExitTicketUrls||'').split('|')[0] || '';
+    }
+    const lesson = { date: iso, day, period, time, type, items, completed: truthy(row.Completed), slidesUrl, exitTicketUrl };
+    if(type === 'assessment') lesson.assessedCodes = codes;
+    out.push(lesson);
+  });
+  out.sort((a,b) => a.date.localeCompare(b.date) || a.period.localeCompare(b.period));
+  return out;
+}
+
+function applyImportedRows(rows, filename){
+  const newLessons = rowsToLessons(rows);
+  if(!newLessons.length){
+    document.getElementById('importMsg').textContent = 'No valid rows found - check the Date column.';
+    return;
+  }
+  LESSONS = newLessons;
+  MONTHS = monthList(LESSONS);
+  monthIdx = 0;
+  selected = null;
+  document.getElementById('detailEmpty').style.display = 'block';
+  document.getElementById('detailBody').style.display = 'none';
+  renderMonth(); renderAgenda('');
+  document.getElementById('importMsg').textContent = `Loaded ${newLessons.length} lessons from ${filename}.`;
+  showToast('Calendar updated from ' + filename);
+  scheduleSave();
+}
+
+function parseCSVText(text){
+  const lines = text.split(/\r?\n/).filter(l => l.length);
+  if(!lines.length) return [];
+  const splitLine = line => {
+    const cells = []; let cur=''; let inQ=false;
+    for(let i=0;i<line.length;i++){
+      const ch = line[i];
+      if(inQ){
+        if(ch === '"' && line[i+1] === '"'){ cur+='"'; i++; }
+        else if(ch === '"'){ inQ=false; }
+        else cur += ch;
+      } else {
+        if(ch === '"') inQ = true;
+        else if(ch === ','){ cells.push(cur); cur=''; }
+        else cur += ch;
+      }
+    }
+    cells.push(cur);
+    return cells;
+  };
+  const header = splitLine(lines[0]).map(h => h.trim());
+  return lines.slice(1).map(line => {
+    const cells = splitLine(line);
+    const row = {};
+    header.forEach((h,i) => row[h] = cells[i] !== undefined ? cells[i] : '');
+    return row;
+  });
+}
+
+document.getElementById('fileInput').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const msg = document.getElementById('importMsg');
+  msg.textContent = 'Reading ' + file.name + '…';
+  try{
+    if(/\.xlsx$/i.test(file.name)){
+      if(typeof XLSX === 'undefined'){
+        msg.textContent = 'Excel import is unavailable right now - please save as CSV and import that instead.';
+        return;
+      }
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, {type:'array'});
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, {defval:''});
+      applyImportedRows(rows, file.name);
+    } else {
+      const text = await file.text();
+      const rows = parseCSVText(text);
+      applyImportedRows(rows, file.name);
+    }
+  }catch(err){
+    msg.textContent = 'Could not read that file: ' + err.message;
+  }
+});
+
+/* ---------- Syllabus reference ---------- */
+function renderSyllabus(){
+  const byTopic = {};
+  CATALOG.forEach(it => {
+    byTopic[it.topic_code] = byTopic[it.topic_code] || {title: it.topic_title, subs: {}};
+    byTopic[it.topic_code].subs[it.subtopic_code] = byTopic[it.topic_code].subs[it.subtopic_code] || {title: it.subtopic_title, items: []};
+    byTopic[it.topic_code].subs[it.subtopic_code].items.push(it);
+  });
+  const order = ['A1','A2','A3','A4','B1','B2','B3','B4'];
+  let html = '';
+  order.forEach(code => {
+    const t = byTopic[code];
+    if(!t) return;
+    const nItems = Object.values(t.subs).reduce((a,s)=>a+s.items.length,0);
+    html += `<details class="syllabus-topic"><summary>${code} &ndash; ${t.title} <span class="hrs">(${nItems} items)</span></summary>`;
+    Object.entries(t.subs).forEach(([sc, s]) => {
+      html += `<div class="syllabus-sub"><div class="st-title">${sc} ${s.title}</div>`;
+      s.items.forEach(it => {
+        const covered = it.done_already ? ' covered' : '';
+        const hl = it.level === 'hl' ? '<span style="font-size:9px;background:var(--accent);color:#fff;border-radius:3px;padding:0 4px;margin-left:3px;">HL</span>' : '';
+        html += `<div class="syllabus-item${covered}"><span class="code">${it.code}</span><span>${it.text}${hl}${it.done_already ? ' &mdash; already covered' : ''}</span></div>`;
+      });
+      html += `</div>`;
+    });
+    html += `</details>`;
+  });
+  document.getElementById('syllabusRef').innerHTML = html;
+}
+
+/* ---------- Exam countdown ---------- */
+const EXAM_DATE = new Date(2028, 3, 25, 0, 0, 0); // 25 April 2028, first assessment
+function renderCountdown(){
+  let diff = EXAM_DATE.getTime() - Date.now();
+  if(diff < 0) diff = 0;
+  const totalSec = Math.floor(diff / 1000);
+  const days = Math.floor(totalSec / 86400);
+  const hours = Math.floor((totalSec % 86400) / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  set('cdDays', days);
+  set('cdHours', String(hours).padStart(2,'0'));
+  set('cdMins', String(mins).padStart(2,'0'));
+  set('cdSecs', String(secs).padStart(2,'0'));
+}
+
+/* ---------- init ---------- */
+renderCalHead();
+renderMonth();
+renderAgenda('');
+renderSyllabus();
+goToMonthOf(LESSONS.some(l => l.date === TODAY_ISO) ? TODAY_ISO : LESSONS[0].date);
+renderCountdown();
+setInterval(renderCountdown, 1000);
+</script>
+</body>
+</html>
